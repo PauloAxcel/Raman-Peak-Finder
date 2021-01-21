@@ -1,0 +1,681 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RunInterfaceWindow</class>
+ <widget class="QMainWindow" name="RunInterfaceWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>863</width>
+    <height>617</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>71</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="text">
+     <string>Select CSV file:</string>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="runPlotButton">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>170</y>
+      <width>131</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Run Plot</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="resultsBox">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>340</y>
+      <width>691</width>
+      <height>251</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>340</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Results:</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="fileBrowseButton">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>20</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Browse</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>10</y>
+      <width>61</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Configure:</string>
+    </property>
+   </widget>
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>10</y>
+      <width>461</width>
+      <height>151</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>1</number>
+    </property>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>Baseline</string>
+     </attribute>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>131</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Asymmetry param:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>131</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Smoothness param:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="AsymmetryParamBox">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>10</y>
+        <width>91</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="SmoothnessParamBox">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>40</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_19">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>70</y>
+        <width>131</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Max iters:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_20">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>100</y>
+        <width>131</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Conv thresh:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="MaxItersBox">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>70</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="ConvThreshBox">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>100</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_2">
+     <attribute name="title">
+      <string>Elastic Modulus</string>
+     </attribute>
+     <widget class="QLineEdit" name="rSquaredMinBox">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>70</y>
+        <width>41</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="elasticModFindingStepBox">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>40</y>
+        <width>41</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>70</y>
+        <width>121</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Critical r_squared value:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="elasticModStartBox">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>10</y>
+        <width>41</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Initial error region size (%):</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_8">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>141</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Calculation step:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="elasticModBacktrackValueBox">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>40</y>
+        <width>41</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="numOfStepsAfterSquaredMinIsHitBox">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>10</y>
+        <width>41</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_10">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>10</y>
+        <width>141</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Steps to wait after inital hit:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_11">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>40</y>
+        <width>91</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Backtrack Value:</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_3">
+     <attribute name="title">
+      <string>(Yield) Stress Determination</string>
+     </attribute>
+     <widget class="QLineEdit" name="yieldStressFindingStepBox">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>40</y>
+        <width>41</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_13">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>131</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Intersection line step size:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_12">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>91</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Stress accuracy:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="yieldStressAccuracyBox">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>10</y>
+        <width>41</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_14">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>10</y>
+        <width>201</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Low elastic modulus cut-off value (MPa):</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_15">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>40</y>
+        <width>211</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>High elastic modulus strain field range (%):</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lowElasticModulusBox">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>10</y>
+        <width>41</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="highElasticModCuttingRangeBox">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>40</y>
+        <width>41</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_4">
+     <attribute name="title">
+      <string>Plateau Region</string>
+     </attribute>
+     <widget class="QLabel" name="label_16">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>161</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Analysis segment length (steps):</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="plateauAnalyseSegmentLengthBox">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>10</y>
+        <width>41</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_17">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>161</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Plateau region defining factor:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="plateauRegionDefiningFactorBox">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>40</y>
+        <width>41</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QCheckBox" name="baselineCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>60</y>
+      <width>151</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Baseline Correction</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="stdCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>90</y>
+      <width>161</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Standard Deviation</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="normalizationCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>120</y>
+      <width>161</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Normalization</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>280</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Selected file:</string>
+    </property>
+   </widget>
+   <widget class="QScrollArea" name="scrollArea">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>250</y>
+      <width>691</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <widget class="QWidget" name="scrollAreaWidgetContents_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>689</width>
+       <height>79</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="selectedFileViewBox">
+        <property name="text">
+         <string>None</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="runStackButton">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>170</y>
+      <width>131</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Run StackPlot</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="runHeatButton">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>170</y>
+      <width>131</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Run HeatPlot</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="runWaterfallButton">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>170</y>
+      <width>131</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Run WaterfallPlot</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
