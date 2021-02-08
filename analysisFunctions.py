@@ -14,13 +14,15 @@ warnings.filterwarnings("ignore")
 
 from scipy.linalg import solveh_banded
 from scipy import signal
-
+from sklearn.decomposition import PCA
+from collections import OrderedDict
+from sklearn.mixture import GaussianMixture
+from matplotlib.patches import Ellipse
 
 font = {'family' : 'Arial',
         'size'   : 22}
 
 plt.rc('font', **font)
-
 
 # From MatrixExp
 def matrix_exp_eigen(U, s, t, x):
@@ -118,7 +120,7 @@ class WhittakerSmoother(object):
 #
 #    print(file.split('\\')[-1][:11])
     
-inputFilePath = r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\1st_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt'
+#inputFilePath = r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\1st_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt'
 def ImportData(inputFilePath):
 #    print(inputFilePath)
     
@@ -387,7 +389,7 @@ def Baseline(y,asymmetry_param, smoothness_param, max_iters, conv_thresh):
 def BaselineNAVG(y,asymmetry_param, smoothness_param, max_iters, conv_thresh):
     a = []
     for i in range(y.shape[1]):
-        a.append(y.iloc[:,i].values-als_baseline(y.iloc[:,i]))    
+        a.append(y.iloc[:,i].values-als_baseline(y.iloc[:,i],asymmetry_param, smoothness_param, max_iters, conv_thresh))    
     z = pd.DataFrame(np.transpose(a))
     z.columns = y.columns
     
@@ -418,7 +420,138 @@ def NormalizeNSTD(y,ystd):
     z.columns = y.columns
     
     return z
+   
+def sortData(files,asymmetry_param ,smoothness_param ,max_iters ,conv_thresh ):
+    target = []
+    dataset = []
+    for file in files:
+            
+        wavenumber, intensity, n_points, n_raman,label = ImportData(file)         
+        baseline = BaselineNAVG(intensity,asymmetry_param, smoothness_param, max_iters, conv_thresh)
+        norm = NormalizeNAVG(baseline)
+        for i in range(norm.shape[1]):
+            target.append(label)
+            dataset.append(norm.iloc[:,i])
+    return wavenumber,dataset, target
+
+
+def OrganizePCAData(norm,labels):    
+    df_pca = pd.DataFrame(norm).reset_index(drop=True)
+    target = pd.DataFrame(labels,columns=['sample'])
     
+    pca = PCA()
+    principalComponents = pca.fit_transform(df_pca)
+    columns = ['principal component '+str(i+1) for i in range(df_pca.shape[0])]
+    info = [str(round(pca.explained_variance_ratio_[i]*100,2))+' %)' for i in range(df_pca.shape[0])]
+    principalDf = pd.DataFrame(data = principalComponents , columns = columns)
+    df = pd.concat([principalDf, target], axis = 1)        
+        
+    return df,target,info,pca
+
+
+def PCAPlot2D(df,target,info,flag):    
+    if flag == 0:
+    
+        cycle = plt.rcParams['axes.prop_cycle'].by_key()['color'] 
+        
+        position = []
+            
+        fig = plt.figure(figsize=(9,9/1.618))
+        ax = fig.add_subplot(1,1,1)
+        plt.xlabel('PC 1 ('+info[0])
+        plt.ylabel('PC 2 ('+info[1])
+        
+        colours = []
+        
+        for i in range(len(list(np.unique(target)))):
+            colours.append(cycle[i%len(cycle)])
+            
+        for label,color in zip(list(np.unique(target)),colours):
+            indicesToKeep = df['sample'] == label
+    
+            new_x = df.loc[indicesToKeep, 'principal component 1']
+            new_y = df.loc[indicesToKeep, 'principal component 2']
+    
+            ax.scatter(new_x, new_y, s =100,alpha=1,label=label,marker='x')
+    
+            handles, labels = plt.gca().get_legend_handles_labels()
+            by_label = OrderedDict(zip(labels, handles))
+            plt.legend(loc='best',frameon=False)
+            
+            plt.show()
+        
+        
+    else:
+        
+        cycle = plt.rcParams['axes.prop_cycle'].by_key()['color'] 
+        
+        position = []
+            
+        fig = plt.figure(figsize=(9,9/1.618))
+        ax = fig.add_subplot(1,1,1)
+        plt.xlabel('PC 1 ('+info[0])
+        plt.ylabel('PC 2 ('+info[1])
+        
+        colours = []
+        
+        for i in range(len(list(np.unique(target)))):
+            colours.append(cycle[i%len(cycle)])
+            
+        for label,color in zip(list(np.unique(target)),colours):
+            indicesToKeep = df['sample'] == label
+            
+            gmm = GaussianMixture(n_components=1).fit(pd.concat([df.loc[indicesToKeep, 'principal component 1']
+                       , df.loc[indicesToKeep, 'principal component 2']],axis=1).values)
+        
+        
+           
+            for pos, covar, w in zip(gmm.means_, gmm.covariances_, gmm.weights_):
+                
+                
+                if covar.shape == (2, 2):
+                    U, s, Vt = np.linalg.svd(covar)
+                    angle = np.degrees(np.arctan2(U[1, 0], U[0, 0]))
+                    width, height = 2 * np.sqrt(s)
+                else:
+                    angle = 0
+                    width, height = 2 * np.sqrt(covar)
+                    
+            #draw the 2sigma region
+                ax.add_patch(Ellipse(pos,2*width,2*height,angle,alpha=0.3,color = color))
+        
+                
+                new_x = df.loc[indicesToKeep, 'principal component 1']
+                new_y = df.loc[indicesToKeep, 'principal component 2']
+                
+            #    ax.scatter(new_x, new_y, c = color , s =100,alpha=1,label=target,marker='x')
+                position.append([pos,np.sqrt(width/2),np.sqrt(height/2),label])
+                
+                range1s = (((new_x < pos[0]+np.sqrt(width/2)) & (new_x > pos[0]-np.sqrt(width/2))) | 
+                        ((new_y < pos[1]+np.sqrt(height/2)) & (new_y > pos[1]-np.sqrt(height/2))))
+                ax.scatter(new_x[range1s], new_y[range1s], s =100,alpha=1,label=label,marker='x')
+            
+            #    plot_gmm(gmm)
+            
+                handles, labels = plt.gca().get_legend_handles_labels()
+                by_label = OrderedDict(zip(labels, handles))
+                plt.legend(loc='best',frameon=False)
+            
+            plt.show()
+
+    
+def LoadingsPlot2D(wavenumber,pca):
+    plt.figure(figsize=(9,9/1.618))
+    loadings = pd.DataFrame(pca.components_.T * np.sqrt(pca.explained_variance_))
+    loadings = loadings.iloc[:,:2]
+    loadings.columns = ['LPC1','LPC2']
+    plt.plot(wavenumber,savgol_filter(loadings['LPC1'],11,3),label='LPC1')
+    plt.plot(wavenumber,savgol_filter(loadings['LPC2'],11,3),ls='--',label='LPC2')
+    plt.legend(loc='best',frameon=False)
+    plt.xlabel('Raman shift (cm$^{-1}$)')
+    plt.ylabel('Loadings')
+    plt.show()
+
+
 
 #
 #
