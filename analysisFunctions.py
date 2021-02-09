@@ -18,6 +18,7 @@ from sklearn.decomposition import PCA
 from collections import OrderedDict
 from sklearn.mixture import GaussianMixture
 from matplotlib.patches import Ellipse
+from scipy import stats
 
 font = {'family' : 'Arial',
         'size'   : 22}
@@ -420,6 +421,12 @@ def NormalizeNSTD(y,ystd):
     z.columns = y.columns
     
     return z
+
+#asymmetry_param = 0.05
+#smoothness_param = 1000000
+#max_iters = 10
+#conv_thresh =0.00001
+
    
 def sortData(files,asymmetry_param ,smoothness_param ,max_iters ,conv_thresh ):
     target = []
@@ -435,21 +442,78 @@ def sortData(files,asymmetry_param ,smoothness_param ,max_iters ,conv_thresh ):
     return wavenumber,dataset, target
 
 
-def OrganizePCAData(norm,labels):    
-    df_pca = pd.DataFrame(norm).reset_index(drop=True)
-    target = pd.DataFrame(labels,columns=['sample'])
-    
-    pca = PCA()
-    principalComponents = pca.fit_transform(df_pca)
-    columns = ['principal component '+str(i+1) for i in range(df_pca.shape[0])]
-    info = [str(round(pca.explained_variance_ratio_[i]*100,2))+' %)' for i in range(df_pca.shape[0])]
-    principalDf = pd.DataFrame(data = principalComponents , columns = columns)
-    df = pd.concat([principalDf, target], axis = 1)        
+def OrganizePCAData(norm,labels,wavenumber,z,windowmin,windowmax):    
+    if z == 0 and windowmin == 0 and windowmin == 0:
+        df_pca = pd.DataFrame(norm).reset_index(drop=True)
+        target = pd.DataFrame(labels,columns=['sample'])
         
-    return df,target,info,pca
+        pca = PCA()
+        principalComponents = pca.fit_transform(df_pca)
+        columns = ['principal component '+str(i+1) for i in range(principalComponents.shape[1])]
+        info = ['PC '+str(i+1)+': '+str(round(pca.explained_variance_ratio_[i]*100,2))+' % \n ' for i in range(principalComponents.shape[1])]
+        principalDf = pd.DataFrame(data = principalComponents , columns = columns)
+        df = pd.concat([principalDf, target], axis = 1)
+        
+        
+    elif z == 0:
+        df_pca = pd.DataFrame(norm).reset_index(drop=True)
+        target = pd.DataFrame(labels,columns=['sample'])
+        
+        region = (wavenumber > windowmin) & (wavenumber < windowmax)
+        df_pca = df_pca.T[region].T
+        wavenumber = wavenumber[region]
+        
+        pca = PCA()
+        principalComponents = pca.fit_transform(df_pca)
+        columns = ['principal component '+str(i+1) for i in range(principalComponents.shape[1])]
+        
+#        print(wavenumber.shape)
+#        print(df_pca.shape)
+#        print(principalComponents.shape)
+#        print(len(columns))
+#        print(len(pca.explained_variance_ratio_))
+        
+        info = ['PC '+str(i+1)+': '+str(round(pca.explained_variance_ratio_[i]*100,2))+' % \n ' for i in range(principalComponents.shape[1])]
+        principalDf = pd.DataFrame(data = principalComponents , columns = columns)
+        df = pd.concat([principalDf, target], axis = 1)
+        
+    elif windowmin == 0 and windowmin == 0:
+        df_pca = pd.DataFrame(norm).reset_index(drop=True)
+        out = np.abs(stats.zscore(df_pca))
+        df_pca = df_pca[(out<z).all(axis=1)].reset_index(drop=True)
+        target = pd.DataFrame(labels,columns=['sample'])
+        target = target[(out<z).all(axis=1)].reset_index(drop=True)
+
+        pca = PCA()
+        principalComponents = pca.fit_transform(df_pca)
+        columns = ['principal component '+str(i+1) for i in range(principalComponents.shape[1])]
+        info = ['PC '+str(i+1)+': '+str(round(pca.explained_variance_ratio_[i]*100,2))+' % \n ' for i in range(principalComponents.shape[1])]
+        principalDf = pd.DataFrame(data = principalComponents , columns = columns)
+        df = pd.concat([principalDf, target], axis = 1)        
+        
+    else:
+        df_pca = pd.DataFrame(norm).reset_index(drop=True)
+        out = np.abs(stats.zscore(df_pca))
+        df_pca = df_pca[(out<z).all(axis=1)].reset_index(drop=True)
+        target = pd.DataFrame(labels,columns=['sample'])
+        target = target[(out<z).all(axis=1)].reset_index(drop=True)
+        
+        region = (wavenumber > windowmin) & (wavenumber < windowmax)
+        df_pca = df_pca.T[region].T
+        wavenumber = wavenumber[region]
+        
+        pca = PCA()
+        principalComponents = pca.fit_transform(df_pca)
+        columns = ['principal component '+str(i+1) for i in range(principalComponents.shape[1])]
+        info = ['PC '+str(i+1)+': '+str(round(pca.explained_variance_ratio_[i]*100,2))+' % \n ' for i in range(principalComponents.shape[1])]
+        principalDf = pd.DataFrame(data = principalComponents , columns = columns)
+        df = pd.concat([principalDf, target], axis = 1)        
+        
+    return df,target,info,pca,wavenumber
 
 
 def PCAPlot2D(df,target,info,flag):    
+
     if flag == 0:
     
         cycle = plt.rcParams['axes.prop_cycle'].by_key()['color'] 
@@ -458,8 +522,8 @@ def PCAPlot2D(df,target,info,flag):
             
         fig = plt.figure(figsize=(9,9/1.618))
         ax = fig.add_subplot(1,1,1)
-        plt.xlabel('PC 1 ('+info[0])
-        plt.ylabel('PC 2 ('+info[1])
+        plt.xlabel(str(info[0]))
+        plt.ylabel(str(info[1]))
         
         colours = []
         
@@ -489,8 +553,8 @@ def PCAPlot2D(df,target,info,flag):
             
         fig = plt.figure(figsize=(9,9/1.618))
         ax = fig.add_subplot(1,1,1)
-        plt.xlabel('PC 1 ('+info[0])
-        plt.ylabel('PC 2 ('+info[1])
+        plt.xlabel(str(info[0]))
+        plt.ylabel(str(info[1]))
         
         colours = []
         
@@ -550,6 +614,7 @@ def LoadingsPlot2D(wavenumber,pca):
     plt.xlabel('Raman shift (cm$^{-1}$)')
     plt.ylabel('Loadings')
     plt.show()
+
 
 
 
