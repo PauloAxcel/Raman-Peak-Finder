@@ -1,7 +1,7 @@
 import os
 #from matplotlib import pyplot
 import matplotlib.pyplot as plt
-import analysisFunctions_v14 as af
+import analysisFunctions_v15 as af
 
 # GUI:
 import sys
@@ -106,8 +106,11 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
         
         # Set variables default for Peak Finder
-        
-        self.libraryBrowseButton.clicked.connect(self.selectLibrary)
+        self.keyBrowseButton.clicked.connect(self.selectkey)
+        self.lockBrowseButton.clicked.connect(self.selectlock)
+        self.peakfinderPlotButton.clicked.connect(self.PeakFinder)
+        self.peakParamBox.setText("0")
+#        self.fileBrowseButton.clicked.connect(self.selectFile)
         
     #flag to compare single to map scans
     
@@ -874,7 +877,6 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
             font = {'family' : 'Arial', 'size'   : 22}
             plt.rc('font', **font)
             
-        # the selection is made from last selected to first selected. By inserting the [::-1] it forces the selected order... 
         inputFilePath = openFile
         
         if not inputFilePath:         
@@ -1031,24 +1033,83 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 #                 self.resultsBox.setText(' '.join(info+[' '.join(val) for val in distance]))
 
         if self.HelperCheckBox.isChecked():
-            self.resultsBox.setText(' '.join(text)) 
+            self.resultsBox.setText(' '.join(text))   
                 
         
      
     
     def PeakFinder(self):
+        if self.HelperCheckBox.isChecked():
+            text = ['in this software we open some files and analyse their peaks. totally autonomous peak finder.'
+            'the method involves only with working with baseline substrated and normalized plots.'
+            'A first approach performs an overall lorentzian fit to all the peaks found.'
+            'Next the residue is calculated based on the difference between the real spectra '
+            'and the spectrac built upon the sum of the lorentzians.'
+            'Moreover, this residue, is used to run again the peak finder. Note that this residue'
+            'is smaller than 1. Thus the peak finder has the folowing restrictions, if the peak is found and the '
+            'intensity value is positive compute it. else are ignored.'
+            'Then we run again with the inverted intensity, and check for the peaks again and count the positive ones again.'
+            'The two processes regulate lorentzian overfitting/ lessfitting. The flipped residue peaks are discounted due to overfitting'
+            'he normal residue peaks are counted due to lessfitting. All the lorentzian fit parameters will be stored.\n\n']
+        
+        asymmetry_param = float(self.AsymmetryParamBox.text())
+        smoothness_param = float(self.SmoothnessParamBox.text())
+        max_iters = int(self.MaxItersBox.text())
+        conv_thresh = float(self.ConvThreshBox.text())
+        zscore = float(self.ZscoreParamBox.text())
+        center = float(self.peakParamBox.text())
+        
+        if self.InvCheckBox.isChecked():
+            inv = 1
+        else:
+            inv = 0  
+        
+        
         if self.FunkyCheckBox.isChecked():
             plt.xkcd()
         else:
             plt.rcdefaults()
             font = {'family' : 'Arial', 'size'   : 22}
-            plt.rc('font', **font)
+            plt.rc('font', **font)      
         
-        inputLibPath = openLib
-        
-        if not inputLibPath:
-            
+
+        keygen = openkey
+        if not keygen:
             self.nofile_warning_applications()
+                   
+        if keygen:
+            peak,spectra = af.peakfinder(keygen,asymmetry_param,smoothness_param,max_iters,conv_thresh,zscore,inv)
+            if self.dilutionCheckBox.isChecked():
+                print(peak,spectra)
+                af.plot_dilution(peak,spectra,center)     
+          
+#        lockgen = openlock
+#        if not lockgen:
+#            self.nofile_warning_applications()
+#  
+#        if keygen and lockgen:
+#            peak,spectra = af.peakfinder(keygen,asymmetry_param,smoothness_param,max_iters,conv_thresh,zscore,inv)
+#            if self.dilutionCheckBox.isChecked():
+#                af.plot_dilution(keygen,spectra)
+#            
+#            af.comparison(keygen,lockgen)
+        
+        if self.HelperCheckBox.isChecked():
+            self.resultsBox.setText(' '.join(text))   
+            
+
+            
+            
+    def selectkey(self):
+        global openkey
+        openkey, _filter = QtWidgets.QFileDialog.getOpenFileNames(self, "Lib selection", "", "TXT file (*.txt) ;; CSV files (*.csv)")
+        self.selectedLibraryViewBox.setText(' \n\n'.join((openkey)))
+     
+        
+    def selectlock(self):
+        global openlock
+        openlock, _filter = QtWidgets.QFileDialog.getOpenFileNames(self, "Lib selection", "", "TXT file (*.txt) ;; CSV files (*.csv)")
+        self.selectedLibraryViewBox_2.setText(' \n\n'.join((openlock)))
     
     
     
@@ -1059,12 +1120,6 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         openFile, _filter = QtWidgets.QFileDialog.getOpenFileNames(self, "File selection", "", "TXT file (*.txt) ;; CSV files (*.csv)")
 #        self.selectedFileViewBox.setText(str(openFile))
         self.selectedFileViewBox.setText(' \n\n'.join((openFile)))
-        
-    def selectLibrary(self):
-        global openLib
-        openLib, _filter = QtWidgets.QFileDialog.getOpenFileNames(self, "Lib selection", "", "TXT file (*.txt) ;; CSV files (*.csv)")
-        self.selectedLibraryViewBox.setText(str(openLib))
-        
         
     def Zscorelow(self):  
         QMessageBox.warning(self,'Z-score too low',
