@@ -1,7 +1,7 @@
 import os
 #from matplotlib import pyplot
 import matplotlib.pyplot as plt
-import analysisFunctions_v15 as af
+import analysisFunctions_v19 as af
 
 # GUI:
 import sys
@@ -103,6 +103,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.WindowminParamBox.setText("0")
         self.WindowmaxParamBox.setText("0")
         self.DistanceParam.setText("binary")
+        
 
         
         # Set variables default for Peak Finder
@@ -110,6 +111,8 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.lockBrowseButton.clicked.connect(self.selectlock)
         self.peakfinderPlotButton.clicked.connect(self.PeakFinder)
         self.peakParamBox.setText("0")
+        self.quadrantParamBox.setText("all")
+        self.SmoothParamBox.setText("7")
 #        self.fileBrowseButton.clicked.connect(self.selectFile)
         
     #flag to compare single to map scans
@@ -1058,6 +1061,10 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         conv_thresh = float(self.ConvThreshBox.text())
         zscore = float(self.ZscoreParamBox.text())
         center = float(self.peakParamBox.text())
+        Q = str(self.quadrantParamBox.text())
+        smooth = int(self.SmoothParamBox.text())
+        windowmin = float(self.WindowminParamBox.text())
+        windowmax = float(self.WindowmaxParamBox.text())  
         
         if self.InvCheckBox.isChecked():
             inv = 1
@@ -1078,11 +1085,27 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.nofile_warning_applications()
                    
         if keygen:
-            peak,spectra = af.peakfinder(keygen,asymmetry_param,smoothness_param,max_iters,conv_thresh,zscore,inv)
+#            peak,spectra = af.peakfinder(keygen,asymmetry_param,smoothness_param,max_iters,conv_thresh,zscore,inv)
+            peak,spectra = af.peakfinder(keygen,smooth,asymmetry_param,smoothness_param,max_iters,conv_thresh,zscore,inv)
             if self.dilutionCheckBox.isChecked():
-                print(peak,spectra)
-                af.plot_dilution(peak,spectra,center)     
-          
+#                af.plot_dilution(peak,spectra)
+                af.plot_dilution(peak,spectra,center)  
+                #input a map
+            if self.LoadingsCheckBox_2.isChecked():
+                af.loadingpeak(keygen,smooth,asymmetry_param, smoothness_param, max_iters, conv_thresh,
+                               zscore,inv, Q,windowmin, windowmax, dim=2,flag=1)
+                
+  #input a lock and a key lock ie something you want to find out and a key ie a known solution with peaks
+                          
+                
+        lockgen = openlock
+        if keygen and lockgen:
+            if self.matchCheckBox.isChecked():
+                af.peakmatching(keygen,lockgen)
+                 
+                
+                
+                
 #        lockgen = openlock
 #        if not lockgen:
 #            self.nofile_warning_applications()
