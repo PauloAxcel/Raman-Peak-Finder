@@ -1064,7 +1064,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         Q = str(self.quadrantParamBox.text())
         smooth = int(self.SmoothParamBox.text())
         windowmin = float(self.WindowminParamBox.text())
-        windowmax = float(self.WindowmaxParamBox.text())  
+        windowmax = float(self.WindowmaxParamBox.text())   
         
         if self.InvCheckBox.isChecked():
             inv = 1
@@ -1093,8 +1093,8 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 #input a map
             if self.LoadingsCheckBox_2.isChecked():
                 af.loadingpeak(keygen,smooth,asymmetry_param, smoothness_param, max_iters, conv_thresh,
-                               zscore,inv, Q,windowmin, windowmax, dim=2,flag=1)
-                
+                               zscore,inv, Q,windowmin, windowmax, dim=2,flag=1) 
+                 
   #input a lock and a key lock ie something you want to find out and a key ie a known solution with peaks
                           
                 
@@ -1102,6 +1102,10 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         if keygen and lockgen:
             if self.matchCheckBox.isChecked():
                 af.peakmatching(keygen,lockgen)
+                
+        if keygen and lockgen:
+            if self.matchCheckBox.isChecked() and self.LoadingsCheckBox_2.isChecked():
+                af.peakloadmatching(keygen,lockgen)
                  
                 
                 
