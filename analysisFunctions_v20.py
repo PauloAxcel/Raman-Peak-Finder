@@ -3193,12 +3193,12 @@ def loadingpeak(maps,smooth,
 
 
 
-lockgens = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\own papers\paper 2\figure 7\MIP Melezitose\80nm comparison\7)80nm_st95.txt',
-    r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\own papers\paper 2\figure 7\MIP Melezitose\80nm comparison\8)80nm_mel_st95.txt'
-    ]
-keygen = r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\5) 10mM_Mel.csv'
-
-    
+#lockgens = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\own papers\paper 2\figure 7\MIP Melezitose\80nm comparison\7)80nm_st95.txt',
+#    r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\own papers\paper 2\figure 7\MIP Melezitose\80nm comparison\8)80nm_mel_st95.txt'
+#    ]
+#keygen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\5) 10mM_Mel.csv']
+#
+#    
 def cluster(data, maxgap):
     data.sort()
     groups = [[data[0]]]
@@ -3213,10 +3213,10 @@ def cluster(data, maxgap):
 #lock is a map
 #key is a generated csv
     
-def peakmatching(keygen,lockgens):
-    key = pd.read_csv(keygen,sep=';')
+def peakmatching(keygen,lockgens,tol = 5):
+    key = pd.read_csv(keygen[0],sep=';')
     
-    fig, ax = plt.subplots(len(lockgens), 1, sharex='all', sharey='all')
+    fig, ax = plt.subplots(len(lockgens), 1, sharex='all', sharey='all',figsize=(9,len(lockgens)*9/1.618))
     i=0
         
     
@@ -3228,10 +3228,9 @@ def peakmatching(keygen,lockgens):
          
          
         key = key[key['Intensity (a.u.)']>0]
-        key = key[key['label']==key['label'].iloc[-1]]
+#        key = key[key['label']==key['label'].iloc[-1]]
     
          
-        tol = 5
         match = []
          
         for k in key['center'].unique():
@@ -3293,29 +3292,21 @@ def peakmatching(keygen,lockgens):
             plt.show()
             i = i+1
   
-keygen = r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\5) 10mM_Mel.csv'
-lockgen = r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\loadingsall1)80nm_au.t.csv'
+#keygen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\5) 10mM_Mel.csv']
+#lockgen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\loadingsall1)80nm_au.t.csv']
     
 
-    
+     
 
-def peakloadmatching(keygen,lockgen):
-    key = pd.read_csv(keygen,sep=';')
-    lock = pd.read_csv(lockgen, sep=';')
+def peakloadmatching(keygen,lockgen,tol=5):
+    key = pd.read_csv(keygen[0],sep=';')
+    lock = pd.read_csv(lockgen[0], sep=';')
     
     key = key[key['Intensity (a.u.)']>0]
-    key = key[key['label']==key['label'].iloc[-1]]
+#    key = key[key['label']==key['label'].iloc[-1]]
     
     lock = lock[lock['height']>0]
     
-#    lock = lock[(np.abs(stats.zscore(lock['center'].values))<1)]
-#    lock = lock[(out < 3).all(axis=1)]
-
-    
-    
-    fig, (ax1,ax2) = plt.subplots(2,1,sharex='all', sharey='all')
-    
-    tol = 5
     match = []
      
     for k in key['center'].unique():
@@ -3340,55 +3331,95 @@ def peakloadmatching(keygen,lockgen):
      
     for c,nam in zip(cluster_m,lab):
         dataset.append([np.mean(c),nam])
-        
-#    wavenumber = spectra.iloc[:,-1]
-     
-    
-    xnew = np.linspace(key['center'].min(),key['center'].max(),1000)
+
+    xnew = np.linspace(key['center'].min(),key['center'].max(),1000) 
     
     sim_plot = []
     for cent,inten,wid in zip(key['center'].tolist(),key['Intensity (a.u.)'].tolist(),key['width'].tolist()):
         sim_plot.append(_1Lorentzian(xnew,inten,cent,wid))
     
     sim_plot = pd.DataFrame(sim_plot).sum()
-    
-    
+
     xnew2 = np.linspace(lock['center'].min(),lock['center'].max(),1000)
     
     sim_plot2 = []
-    for cent,inten,wid in zip(lock['center'].tolist(),lock['height'].tolist(),lock['width'].tolist()):
-        sim_plot2.append(_1Lorentzian(xnew2,inten,cent,wid))
+    sim_plot_sep = []
+
+    for imp in lock['importance'].unique().tolist():
+        aux = []
+        index = lock['importance'] == imp
+        for cent,inten,wid in zip(lock['center'][index].tolist(),lock['height'][index].tolist(),lock['width'][index].tolist()):
+            sim_plot2.append(_1Lorentzian(xnew2,inten,cent,wid))
+            aux.append(_1Lorentzian(xnew2,inten,cent,wid))
+        sim_plot_sep.append(pd.DataFrame(aux).sum().values)
     
     sim_plot2 = pd.DataFrame(sim_plot2).sum()
+    sim_plot_sep = pd.DataFrame(sim_plot_sep)
+    sim_plot_sep['importance'] = pd.DataFrame(lock['importance'].unique().tolist())
     
-    ax1.plot(xnew,sim_plot,label='key')
-    ax2.plot(xnew2,sim_plot2*sim_plot.max()/sim_plot2.min(),label='loading')
     
 
-    if len(lockgens) == 1:
-        ax.plot(wavenumber,spectra.iloc[:,:-1], label = spectra.columns[0])
-        for data in dataset:
-            ax.fill_between(np.linspace(data[0]-tol,data[0]+tol,10),spectra.iloc[:,:-1].max()[0],color='yellow')
-            ax.text(data[0]-tol,spectra.iloc[:,:-1].max()[0]*0.8,data[1],rotation=90,fontsize='xx-small')
-        
-        ax.legend(loc='best',frameon=False)
-        ax.set_xlabel('Raman shift $(cm^{-1})$')
-        ax.set_ylabel('Intensity (a. u.)')
-#        plt.ylim(0,3000)
-        plt.show()
-
-    else:
+    fig, ax2 = plt.subplots(figsize=(9,9/1.618)) 
+    ax2.plot(xnew2,sim_plot2,label='Q sum')
+    soma = sim_plot_sep.iloc[:,:-1].max(axis=1).sum() 
+    a = 0
+    Qs = sim_plot_sep['importance']
     
-        ax[i].plot(wavenumber,spectra.iloc[:,:-1], label = spectra.columns[0])
-        for data in dataset:
-            ax[i].fill_between(np.linspace(data[0]-tol,data[0]+tol,10),spectra.iloc[:,:-1].max()[0],color='yellow')
-            ax[i].text(data[0]-tol,spectra.iloc[:,:-1].max()[0]*0.8,data[1],rotation=90,fontsize='xx-small')
-            
-        ax[i].legend(loc='best',frameon=False)
-        ax[i].set_xlabel('Raman shift $(cm^{-1})$')
-        ax[i].set_ylabel('Intensity (a. u.)')
-        plt.show()
-        i = i+1
+    for imp in Qs.tolist():
+        ax2.fill_between(xnew2,sim_plot_sep.iloc[:,:-1][Qs==imp].values[0]+a,a,label=imp)
+        a = a + sim_plot_sep.iloc[:,:-1][Qs==imp].values[0]
+    for data in dataset:
+        ax2.fill_between(np.linspace(data[0]-tol,data[0]+tol,10),soma,color='yellow',alpha=1/4)
+        ax2.text(data[0]-tol,soma*0.8,data[1],rotation=90,fontsize='xx-small')
+    ax2.set_xlabel('Raman shift $(cm^{-1})$')
+    ax2.set_ylabel('Loadings (a.u.)') 
+    plt.xticks(np.arange(xnew2.min()-1,xnew2.max()+1,50),rotation=90)
+    ax2.legend(loc='best',frameon=False,ncol=5,fontsize=12)
+    plt.show()
+    
+    
+    
+#    
+#    fig, (ax1,ax2) = plt.subplots(2,1,sharex='all', sharey='all', figsize=(9,9/1.618)) 
+#    
+#    ax1.plot(xnew,sim_plot,label='Lorentz GenKey')
+#    ax2.plot(xnew2,sim_plot2*sim_plot.max(),label='Q sum')
+#    for data in dataset:
+#        ax2.fill_between(np.linspace(data[0]-tol,data[0]+tol,10),sim_plot.max(),color='yellow',alpha=0.4)
+#        ax2.text(data[0]-tol,sim_plot.max()*0.8,data[1],rotation=90,fontsize='xx-small')
+#    a = 0
+#    for imp in sim_plot_sep['importance'].tolist():
+#        ax2.fill_between(xnew2,sim_plot_sep.iloc[:,:-1][sim_plot_sep['importance']==imp].values[0]*sim_plot.max()+a,a,alpha=0.5,label=imp)
+#        a = a + sim_plot_sep.iloc[:,:-1][sim_plot_sep['importance']==imp].values[0]*sim_plot.max()
+#    
+#
+#   
+#
+#    ax2.set_xlabel('Raman shift $(cm^{-1})$')
+#    ax2.set_ylabel('Loadings (a.u.)') 
+#    ax1.set_ylabel('Intensity (a.u.)') 
+#    ax1.legend(loc='best',frameon=False,fontsize=12)
+#    ax2.legend(loc='best',frameon=False,fontsize=12)
+#    plt.show()
+#    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

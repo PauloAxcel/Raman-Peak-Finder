@@ -1,7 +1,7 @@
 import os
 #from matplotlib import pyplot
 import matplotlib.pyplot as plt
-import analysisFunctions_v19 as af
+import analysisFunctions_v20 as af
 
 # GUI:
 import sys
@@ -103,6 +103,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.WindowminParamBox.setText("0")
         self.WindowmaxParamBox.setText("0")
         self.DistanceParam.setText("binary")
+        self.TolParamBox.setText("5")
         
 
         
@@ -1014,7 +1015,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 wavenumber,dataset,target,flag = af.sortData(inputFilePath,asymmetry_param, smoothness_param, max_iters, conv_thresh,zscore,inv)
                 
                 if flag == 0:
-                    self.norm_warning_applications()
+                    self.norm_warning_applications() 
                 
                 if len(target)< 2 or len(dataset) <2:
                     self.Zscorelow()
@@ -1064,7 +1065,8 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         Q = str(self.quadrantParamBox.text())
         smooth = int(self.SmoothParamBox.text())
         windowmin = float(self.WindowminParamBox.text())
-        windowmax = float(self.WindowmaxParamBox.text())   
+        windowmax = float(self.WindowmaxParamBox.text()) 
+        tol = float(self.TolParamBox.text()) 
         
         if self.InvCheckBox.isChecked():
             inv = 1
@@ -1082,30 +1084,30 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
         keygen = openkey
         if not keygen:
-            self.nofile_warning_applications()
+            self.nofile_warning_applications()  
+            
+            
+        lockgen = openlock
                    
-        if keygen:
+        if keygen and not lockgen:
 #            peak,spectra = af.peakfinder(keygen,asymmetry_param,smoothness_param,max_iters,conv_thresh,zscore,inv)
             peak,spectra = af.peakfinder(keygen,smooth,asymmetry_param,smoothness_param,max_iters,conv_thresh,zscore,inv)
             if self.dilutionCheckBox.isChecked():
 #                af.plot_dilution(peak,spectra)
                 af.plot_dilution(peak,spectra,center)  
                 #input a map
-            if self.LoadingsCheckBox_2.isChecked():
+            elif self.LoadingsCheckBox_2.isChecked():
                 af.loadingpeak(keygen,smooth,asymmetry_param, smoothness_param, max_iters, conv_thresh,
                                zscore,inv, Q,windowmin, windowmax, dim=2,flag=1) 
                  
   #input a lock and a key lock ie something you want to find out and a key ie a known solution with peaks
                           
                 
-        lockgen = openlock
         if keygen and lockgen:
-            if self.matchCheckBox.isChecked():
-                af.peakmatching(keygen,lockgen)
-                
-        if keygen and lockgen:
-            if self.matchCheckBox.isChecked() and self.LoadingsCheckBox_2.isChecked():
-                af.peakloadmatching(keygen,lockgen)
+            if self.LoadingsCheckBox_2.isChecked() and self.matchCheckBox.isChecked():
+                af.peakloadmatching(keygen,lockgen,tol)
+            elif self.matchCheckBox.isChecked():
+                af.peakmatching(keygen,lockgen,tol)
                  
                 
                 
