@@ -1,7 +1,7 @@
 import os
 #from matplotlib import pyplot
 import matplotlib.pyplot as plt
-import analysisFunctions_v20 as af
+import analysisFunctions_v22 as af
 
 # GUI:
 import sys
@@ -10,7 +10,7 @@ from PyQt5.QtCore import QTimer, pyqtSignal, QEvent
 from PyQt5.QtWidgets import QApplication, QMessageBox, QPushButton, QFrame, QLabel, QWidget, QVBoxLayout
 import signal
 import pandas as pd
-from PyQt5.QtWidgets import QListView
+from PyQt5.QtWidgets import QListView  
 
 empty = pd.DataFrame()
 #def ssPlot(xList, yList):
@@ -1083,12 +1083,13 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         
 
         keygen = openkey
+#        print(keygen)
         if not keygen:
             self.nofile_warning_applications()  
             
             
-        lockgen = openlock
-                   
+        lockgen = openlock 
+#        print(lockgen)
         if keygen and not lockgen:
 #            peak,spectra = af.peakfinder(keygen,asymmetry_param,smoothness_param,max_iters,conv_thresh,zscore,inv)
             peak,spectra = af.peakfinder(keygen,smooth,asymmetry_param,smoothness_param,max_iters,conv_thresh,zscore,inv)
@@ -1099,7 +1100,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
             elif self.LoadingsCheckBox_2.isChecked():
                 af.loadingpeak(keygen,smooth,asymmetry_param, smoothness_param, max_iters, conv_thresh,
                                zscore,inv, Q,windowmin, windowmax, dim=2,flag=1) 
-                 
+        lockgen = openlock      
   #input a lock and a key lock ie something you want to find out and a key ie a known solution with peaks
                           
                 
