@@ -1,7 +1,7 @@
 import os
 #from matplotlib import pyplot
 import matplotlib.pyplot as plt
-import analysisFunctions_v23 as af
+import analysisFunctions_v24 as af
 
 # GUI:
 import sys
@@ -1219,7 +1219,7 @@ def sigint_handler(*args):
 
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, sigint_handler)
-	app = QtWidgets.QApplication(sys.argv)
+	app = QtWidgets.QApplication(sys.argv) 
 	app.setStyle('Fusion')
 	window = MyApp()
 	window.show()
