@@ -3248,7 +3248,7 @@ def peakmatching(keygens,lockgens,tol):
             key = key[key['Intensity (a.u.)']>0]
             key = key[key['importance']=='major']
         
-            dataset = []
+            dataset = [] 
              
             for k in key['center'].unique():
                 for l in lock['center'].unique():
@@ -3280,14 +3280,16 @@ def peakmatching(keygens,lockgens,tol):
 #keygens = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\key5) 10mM_Mel.csv',
 #           r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\key7)80nm_st95.csv']
 #lockgen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\loadingsall7)80nm_st95.csv']
-#    
+    
      
 
 def peakloadmatching(keygens,lockgen,tol):
     
+    
     colours = []
     cycle = plt.rcParams['axes.prop_cycle'].by_key()['color'] 
-            
+    dataset = []     
+    
     for i in range(4):
         colours.append(cycle[i%len(cycle)])
 
@@ -3299,43 +3301,27 @@ def peakloadmatching(keygens,lockgen,tol):
         lock = pd.read_csv(lockgen[0], sep=';')
         lock = lock[lock['height']>0]
         lock = lock[(lock['center']>key['center'].min()) & (lock['center']<key['center'].max())]
-        xnew2 = np.linspace(lock['center'].min(),lock['center'].max(),1000)
-        
-        
-        dataset = []
+               
          
         for k in key['center'].unique():
             for l in lock['center'].unique():
                 if (l<k+tol) & (k-tol<l):
                     dataset.append([k,key['label'][key['center'] == k].values[0]])
-    
-        xnew = np.linspace(key['center'].min(),key['center'].max(),1000) 
-        
-        sim_plot = []
-        for cent,inten,wid in zip(key['center'].tolist(),key['Intensity (a.u.)'].tolist(),key['width'].tolist()):
-            sim_plot.append(_1Lorentzian(xnew,inten,cent,wid))
-        
-        sim_plot = pd.DataFrame(sim_plot).sum()
-    
-        
-        sim_plot2 = []
-        sim_plot_sep = []
-    
-        for imp in lock['importance'].unique().tolist():
-            aux = []
-            index = lock['importance'] == imp
-            for cent,inten,wid in zip(lock['center'][index].tolist(),lock['height'][index].tolist(),lock['width'][index].tolist()):
-                sim_plot2.append(_1Lorentzian(xnew2,inten,cent,wid))
-                aux.append(_1Lorentzian(xnew2,inten,cent,wid))
-            sim_plot_sep.append(pd.DataFrame(aux).sum().values)
-        
-        sim_plot2 = pd.DataFrame(sim_plot2).sum()
-        sim_plot_sep = pd.DataFrame(sim_plot_sep)
-        sim_plot_sep['importance'] = pd.DataFrame(lock['importance'].unique().tolist()) 
 
-        Qs = sim_plot_sep['importance']
-        
+    sim_plot_sep = []
+    xnew2 = np.linspace(lock['center'].min(),lock['center'].max(),1000)
+    for imp in lock['importance'].unique().tolist():
+        aux = []
+        index = lock['importance'] == imp
+        for cent,inten,wid in zip(lock['center'][index].tolist(),lock['height'][index].tolist(),lock['width'][index].tolist()):
+            aux.append(_1Lorentzian(xnew2,inten,cent,wid))
+        sim_plot_sep.append(pd.DataFrame(aux).sum().values)
+    
+    sim_plot_sep = pd.DataFrame(sim_plot_sep)
+    sim_plot_sep['importance'] = pd.DataFrame(lock['importance'].unique().tolist()) 
 
+    Qs = sim_plot_sep['importance']
+    
     order = []
     for imp,color in zip(Qs.tolist(),colours):
         order.append([imp,sim_plot_sep.iloc[:,:-1][Qs==imp].values[0].sum(),color])
@@ -3348,11 +3334,11 @@ def peakloadmatching(keygens,lockgen,tol):
         stack.append(yp) 
 #        plt.plot(xnew,yp)
         
-    plt.figure(figsize=(9,9/1.618))
+    
     stack_df = pd.DataFrame(stack).T
     stack_df.columns = order['Qs'].tolist()
     spectra = diff(stack_df,pd.DataFrame())
-
+    plt.figure(figsize=(9,9/1.618))
     for Qs in spectra.columns.tolist():
         plt.plot(xnew2,spectra[Qs], label = Qs,lw=2,color=order['color'][order['Qs']==Qs].values[0])
 
@@ -3371,181 +3357,3 @@ def peakloadmatching(keygens,lockgen,tol):
        
     
     
-    
-    
-#    colours = []
-#    cycle = plt.rcParams['axes.prop_cycle'].by_key()['color'] 
-#            
-#    for i in range(4):
-#        colours.append(cycle[i%len(cycle)])
-#
-#    fig, axs = plt.subplots(4, 1,figsize=(9,9/1.618),sharex='col', sharey=True,gridspec_kw={'hspace': 0, 'wspace': 0})
-#    axs = axs.ravel()
-#    
-#    for keygen in keygens:
-#        
-#        key = pd.read_csv(keygen,sep=';')     
-#        key = key[key['Intensity (a.u.)']>0]
-#
-#        lock = pd.read_csv(lockgen[0], sep=';')
-#        lock = lock[lock['height']>0]
-#        lock = lock[(lock['center']>key['center'].min()) & (lock['center']<key['center'].max())]
-#        xnew2 = np.linspace(lock['center'].min(),lock['center'].max(),1000)
-#        
-#        
-#        dataset = []
-#         
-#        for k in key['center'].unique():
-#            for l in lock['center'].unique():
-#                if (l<k+tol) & (k-tol<l):
-#                    dataset.append([k,key['label'][key['center'] == k].values[0]])
-#    
-#        xnew = np.linspace(key['center'].min(),key['center'].max(),1000) 
-#        
-#        sim_plot = []
-#        for cent,inten,wid in zip(key['center'].tolist(),key['Intensity (a.u.)'].tolist(),key['width'].tolist()):
-#            sim_plot.append(_1Lorentzian(xnew,inten,cent,wid))
-#        
-#        sim_plot = pd.DataFrame(sim_plot).sum()
-#    
-#        
-#        sim_plot2 = []
-#        sim_plot_sep = []
-#    
-#        for imp in lock['importance'].unique().tolist():
-#            aux = []
-#            index = lock['importance'] == imp
-#            for cent,inten,wid in zip(lock['center'][index].tolist(),lock['height'][index].tolist(),lock['width'][index].tolist()):
-#                sim_plot2.append(_1Lorentzian(xnew2,inten,cent,wid))
-#                aux.append(_1Lorentzian(xnew2,inten,cent,wid))
-#            sim_plot_sep.append(pd.DataFrame(aux).sum().values)
-#        
-#        sim_plot2 = pd.DataFrame(sim_plot2).sum()
-#        sim_plot_sep = pd.DataFrame(sim_plot_sep)
-#        sim_plot_sep['importance'] = pd.DataFrame(lock['importance'].unique().tolist()) 
-#
-#        a = 0
-#        Qs = sim_plot_sep['importance']
-#        
-#
-#    order = []
-#    for imp,color in zip(Qs.tolist(),colours):
-#        order.append([imp,sim_plot_sep.iloc[:,:-1][Qs==imp].values[0].sum(),color])
-#    order = pd.DataFrame(order,columns=['Qs','sum','color']).sort_values(by='sum')
-#    
-#    index1 = order[order['sum']==order['sum'].min()].index[0]
-#    
-#    for data in dataset:
-#            axs[0].text(data[0]-tol,0.8*sim_plot_sep.iloc[:,:-1].max(axis=1)[index1],data[1],rotation=90,fontsize='xx-small')
-#            
-#    i = 0
-#    for imp in order['Qs'].tolist():
-#        y = sim_plot_sep.iloc[:,:-1][Qs==imp].values[0]
-#        yp = y-als_baseline(y)
-#    
-#        for data in dataset:
-#            axs[i].fill_between(np.linspace(data[0]-tol,data[0]+tol,10),yp.max(),color='yellow',alpha=1/3)
-#
-#        axs[i].fill_between(xnew2,yp-yp.min(),a,label=imp,color=order['color'][imp == order['Qs']])
-#  
-#        axs[i].set_xlabel('Raman shift $(cm^{-1})$')
-#        labels = np.arange(xnew2.min()-xnew2.min()%50,xnew2.max()-xnew2.max()%50+51,50)
-#        axs[i].set_xticks(labels)
-#        axs[i].set_xticklabels([str(round(int(label),0)) for label in labels], rotation=90)
-#        axs[i].legend(loc='best',frameon=False,ncol=5,fontsize=12)
-#        axs[i].set_yticklabels([])
-#        axs[i].set_yticks([])
-#        
-#    
-#        i = i + 1
-#    
-#    
-#    for ax in axs.flat:
-#        ax.label_outer()
-#
-#    plt.ylabel('Loadings (a.u.)')
-#    plt.show()
-# 
-#    
-#    colours = []
-#    cycle = plt.rcParams['axes.prop_cycle'].by_key()['color'] 
-#            
-#    for i in range(4):
-#        colours.append(cycle[i%len(cycle)])
-#
-#    fig, ax2 = plt.subplots(figsize=(9,9/1.618)) 
-#    
-#    for keygen in keygens:
-#        
-#        key = pd.read_csv(keygen,sep=';')     
-#        key = key[key['Intensity (a.u.)']>0]
-#
-#        lock = pd.read_csv(lockgen[0], sep=';')
-#        lock = lock[lock['height']>0]
-#        lock = lock[(lock['center']>key['center'].min()) & (lock['center']<key['center'].max())]
-#        xnew2 = np.linspace(lock['center'].min(),lock['center'].max(),1000)
-#        
-#        
-#        dataset = []
-#         
-#        for k in key['center'].unique():
-#            for l in lock['center'].unique():
-#                if (l<k+tol) & (k-tol<l):
-#                    dataset.append([k,key['label'][key['center'] == k].values[0]])
-#    
-#        xnew = np.linspace(key['center'].min(),key['center'].max(),1000) 
-#        
-#        sim_plot = []
-#        for cent,inten,wid in zip(key['center'].tolist(),key['Intensity (a.u.)'].tolist(),key['width'].tolist()):
-#            sim_plot.append(_1Lorentzian(xnew,inten,cent,wid))
-#        
-#        sim_plot = pd.DataFrame(sim_plot).sum()
-#    
-#        
-#        sim_plot2 = []
-#        sim_plot_sep = []
-#    
-#        for imp in lock['importance'].unique().tolist():
-#            aux = []
-#            index = lock['importance'] == imp
-#            for cent,inten,wid in zip(lock['center'][index].tolist(),lock['height'][index].tolist(),lock['width'][index].tolist()):
-#                sim_plot2.append(_1Lorentzian(xnew2,inten,cent,wid))
-#                aux.append(_1Lorentzian(xnew2,inten,cent,wid))
-#            sim_plot_sep.append(pd.DataFrame(aux).sum().values)
-#        
-#        sim_plot2 = pd.DataFrame(sim_plot2).sum()
-#        sim_plot_sep = pd.DataFrame(sim_plot_sep)
-#        sim_plot_sep['importance'] = pd.DataFrame(lock['importance'].unique().tolist()) 
-#        
-#        
-#    
-#        
-#    #    ax2.plot(xnew2,sim_plot2,label='Q sum')
-#        soma = sim_plot_sep.iloc[:,:-1].max(axis=1).sum()  
-#        a = 0
-#        Qs = sim_plot_sep['importance']
-#        
-#        for data in dataset:
-#                ax2.fill_between(np.linspace(data[0]-tol,data[0]+tol,10),soma,color='yellow',alpha=1/4)
-#                ax2.text(data[0]-tol,soma*0.8,data[1],rotation=90,fontsize='xx-small')
-#    
-#    order = []
-#    for imp,color in zip(Qs.tolist(),colours):
-#        order.append([imp,sim_plot_sep.iloc[:,:-1][Qs==imp].values[0].sum(),color])
-#    order = pd.DataFrame(order,columns=['Qs','sum','color']).sort_values(by='sum',ascending=False)
-#    
-#    
-#    
-#    for imp in order['Qs'].tolist():
-#        y = sim_plot_sep.iloc[:,:-1][Qs==imp].values[0]
-#        yp = y-als_baseline(y)
-#        ax2.fill_between(xnew2,yp+a-yp.min(),a,label=imp,color=order['color'][imp == order['Qs']])
-#        a = a + yp - yp.min()
-##        print(yp.min())
-#    
-#    ax2.set_xlabel('Raman shift $(cm^{-1})$')
-#    ax2.set_ylabel('Loadings (a.u.)') 
-#    plt.xticks(np.arange(xnew2.min()-xnew2.min()%50,xnew2.max()-xnew2.max()%50+51,50),rotation=90)
-#    ax2.legend(loc='best',frameon=False,ncol=5,fontsize=12)
-#    plt.show()
-#    

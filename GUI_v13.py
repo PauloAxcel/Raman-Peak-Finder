@@ -1201,7 +1201,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         if choice == QMessageBox.Yes:
             sys.exit()
         else:
-            pass
+            pass 
         
     def closeEvent(self,QCloseEvent):
         QCloseEvent.ignore()
