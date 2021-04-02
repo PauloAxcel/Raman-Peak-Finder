@@ -1,7 +1,7 @@
 import os
 #from matplotlib import pyplot
 import matplotlib.pyplot as plt
-import analysisFunctions_v25 as af
+import analysisFunctions_v26 as af
 
 # GUI:
 import sys
@@ -705,7 +705,6 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                     af.cluster_distance_plot(dfdiff,names2,stylestring,box_pairs2,colours2)
 #                    af.density_plot(dfdiff,colours2,names2)
                     af.dist_k_calc(finalDf,stylestring,targets,position,colours,dim=2)
-                    af.plot_roc_curve(dataset,target)
                     
              elif self.GaussianCheckBox.isChecked() and self.DistanceCheckBox.isChecked():
                 wavenumber,dataset,target,flag = af.sortData(inputFilePath,asymmetry_param, smoothness_param, max_iters, conv_thresh,zscore,inv)
@@ -713,7 +712,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.norm_warning_applications()
                     
                     
-                if len(target)< 2 or len(dataset) <2:
+                if len(target)< 2 or len(dataset) <2:  
                     self.Zscorelow()
                 else:                        
                     finalDf,targets,info,pca,wavenumber = af.OrganizePCAData(dataset,target,wavenumber,windowmin,windowmax)
