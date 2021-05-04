@@ -1,7 +1,7 @@
 import os
 #from matplotlib import pyplot
 import matplotlib.pyplot as plt
-import analysisFunctions_v30 as af
+import analysisFunctions_v31 as af
 
 # GUI:
 import sys
@@ -861,6 +861,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         windowmax = float(self.WindowmaxParamBox.text())  
         stylestring = str(self.DistanceParam.text())   
         distance = []
+        distance_k = []
         
         if windowmin > windowmax:
             self.Windowsissue()
@@ -1069,7 +1070,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         windowmin = float(self.WindowminParamBox.text())
         windowmax = float(self.WindowmaxParamBox.text()) 
         tol = float(self.TolParamBox.text()) 
-        n_plot = float(self.numberParamBox.text()) 
+        n_plot = int(self.numberParamBox.text()) 
         
         if self.InvCheckBox.isChecked():
             inv = 1
@@ -1098,7 +1099,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 #            peak,spectra = af.peakfinder(keygen,asymmetry_param,smoothness_param,max_iters,conv_thresh,zscore,inv)
             peak,spectra = af.peakfinder(keygen,smooth,asymmetry_param,smoothness_param,max_iters,conv_thresh,zscore,inv)
 
-            if self.dilutionCheckBox.isChecked():
+            if self.dilutionCheckBox.isChecked(): 
 #                af.plot_dilution(peak,spectra)
                 try:
                     af.plot_dilution(peak,spectra,center) 
@@ -1106,12 +1107,22 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.lab_warning_applications()
                 #input a map
             elif self.LoadingsCheckBox_2.isChecked():
-                af.loadingpeak(keygen,smooth,asymmetry_param, smoothness_param, max_iters, conv_thresh,
+                if Q.isdigit():
+                    af.loadingpeak(keygen,smooth,asymmetry_param, smoothness_param, max_iters, conv_thresh,
+                               zscore,inv, int(Q),windowmin, windowmax, dim=2,flag=1) 
+                else:
+                    af.loadingpeak(keygen,smooth,asymmetry_param, smoothness_param, max_iters, conv_thresh,
                                zscore,inv, Q,windowmin, windowmax, dim=2,flag=1) 
+                    
                 
             elif self.LoadingsplusCheckBox.isChecked():
-                text = af.pca_max_dist(keygen,smooth,  asymmetry_param,   smoothness_param,  max_iters, 
+                if Q.isdigit():
+                    text = af.pca_max_dist(keygen,smooth,  asymmetry_param,   smoothness_param,  max_iters, 
+                                conv_thresh, zscore,inv,  int(Q), windowmin, windowmax, n_plot,dim=2,flag=1)
+                else:
+                    text = af.pca_max_dist(keygen,smooth,  asymmetry_param,   smoothness_param,  max_iters, 
                                 conv_thresh, zscore,inv,  Q, windowmin, windowmax, n_plot,dim=2,flag=1)
+
                 self.resultsBox.setText(' '.join([t[0]+'\n' for t in text]))
             
         lockgen = openlock       
