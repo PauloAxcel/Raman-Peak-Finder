@@ -1,7 +1,7 @@
 import os
 #from matplotlib import pyplot
 import matplotlib.pyplot as plt
-import analysisFunctions_v31 as af
+import analysisFunctions_v32 as af
 
 # GUI:
 import sys
@@ -424,7 +424,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
             if self.baselineCheckBox.isChecked() and self.stdCheckBox.isChecked() and self.normalizationCheckBox.isChecked():
                 wavenumber,z,label,sstd = af.spec(inputFilePath)
                 
-                if sstd.equals(empty):
+                if sstd == []:
                     self.single_warning_applications()
                     
                 baseline = af.BaselineNAVGS(z,asymmetry_param, smoothness_param, max_iters, conv_thresh)
@@ -436,7 +436,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
             elif self.baselineCheckBox.isChecked() and self.stdCheckBox.isChecked():
                 wavenumber,z,label,sstd = af.spec(inputFilePath)
                 
-                if sstd.equals(empty):
+                if sstd == []:
                     self.single_warning_applications()
                 
                 baseline = af.BaselineNAVGS(z,asymmetry_param, smoothness_param, max_iters, conv_thresh)              
@@ -448,7 +448,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
             elif self.stdCheckBox.isChecked() and self.normalizationCheckBox.isChecked():
                 wavenumber,z,label,sstd = af.spec(inputFilePath)
                 
-                if sstd.equals(empty):
+                if sstd == []:
                     self.single_warning_applications()
                 
                 z = af.separate_stack(z)
@@ -466,7 +466,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
             elif self.stdCheckBox.isChecked():
                 wavenumber,z,label,sstd = af.spec(inputFilePath)
                 
-                if sstd.equals(empty):
+                if sstd == []:
                     self.single_warning_applications()
 
                 z = af.separate_stack(z)
@@ -555,7 +555,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
             if self.baselineCheckBox.isChecked() and self.stdCheckBox.isChecked() and self.normalizationCheckBox.isChecked():
                 wavenumber,z,label,sstd = af.spec(inputFilePath)
                 
-                if sstd.equals(empty):
+                if sstd == []:
                     self.single_warning_applications()
               
                 baseline = af.BaselineNAVGS(z,asymmetry_param, smoothness_param, max_iters, conv_thresh)
@@ -566,7 +566,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
             elif self.baselineCheckBox.isChecked() and self.stdCheckBox.isChecked():
                 wavenumber,z,label,sstd = af.spec(inputFilePath)
                 
-                if sstd.equals(empty):
+                if sstd == []:
                     self.single_warning_applications()
                     
                 baseline = af.BaselineNAVGS(z,asymmetry_param, smoothness_param, max_iters, conv_thresh)              
@@ -577,7 +577,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
             elif self.stdCheckBox.isChecked() and self.normalizationCheckBox.isChecked():
                 wavenumber,z,label,sstd = af.spec(inputFilePath)
                 
-                if sstd.equals(empty):
+                if sstd == []:
                     self.single_warning_applications()
                 
                 z = af.separate_stack(z)
@@ -596,7 +596,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
             elif self.stdCheckBox.isChecked():
                 wavenumber,z,label,sstd = af.spec(inputFilePath)
                 
-                if sstd.equals(empty):
+                if sstd == []:
                     self.single_warning_applications()
                 
                 z = af.separate_stack(z)
