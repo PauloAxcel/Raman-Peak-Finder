@@ -12,6 +12,7 @@ import signal
 import pandas as pd
 from PyQt5.QtWidgets import QListView  
 
+
 empty = pd.DataFrame()
 #def ssPlot(xList, yList):
 #	# Plots stress-strain curve

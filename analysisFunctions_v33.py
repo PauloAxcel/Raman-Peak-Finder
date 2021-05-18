@@ -62,6 +62,7 @@ from scipy import ndimage
 import matplotlib.patches as mpatches  
 import matplotlib.gridspec as gridspec
 from itertools import chain
+from sklearn.preprocessing import minmax_scale, scale
 
 bin_colours = ['r','orange',
               'g','lime',
@@ -4077,6 +4078,8 @@ def ImportDataSOM(inputFilePath,windowmin,windowmax):
     if (windowmax !=0) & (windowmin != 0):
         intensity = intensity.T.loc[xnew[region]].T
         
+    intensity = pd.DataFrame(scale(intensity,axis=1),index=intensity.index,columns=intensity.columns)
+    
     return intensity
 
 
@@ -4350,8 +4353,8 @@ def NeuronActivationperWavePlot(som, data):
     row = math.ceil(math.sqrt(dataval.shape[1]))
     col = math.ceil(math.sqrt(dataval.shape[1]))
     
-    zmin=min(np.min(properties.iloc[:,2:]))
-    zmax=max(np.max(properties.iloc[:,2:]))
+#    zmin=min(np.min(properties.iloc[:,2:]))
+#    zmax=max(np.max(properties.iloc[:,2:]))
     
     #these plots show how the neurons reacted to the different Raman shifts.
     #for eg. how the 7x7 nuerons reacted to the 520cm-1 band?
@@ -4378,7 +4381,7 @@ def NeuronActivationperWavePlot(som, data):
         z = properties.sort_values(by=['row', 'col'])[col].values.reshape(size,size) 
         all_heat.append(list(z.ravel())+[col])
 #        z = ndimage.rotate(z, 90)
-        ax.imshow(z.T , cmap='cool' , interpolation = 'nearest' , vmin = zmin , vmax = zmax)
+        ax.imshow(z.T , cmap='cool' , interpolation = 'nearest' ,  vmin = np.nanmin(z) , vmax =np.nanmax(z))
         
         ax.set_title(str(int(col)),fontsize=8.5,y=0.8)
         ax.set_xticklabels([])
