@@ -104,10 +104,10 @@ def get_line_laplacian_eigen(n):
                 eigen_vectors[i - 1, j - 1] = math_sqrt * np.cos(theta)
     return eigen_vectors, eigen_values
 
-#def smooth2(t, signal):
-#    dim = signal.shape[0]
-#    U, s = get_line_laplacian_eigen(dim)
-#    return matrix_exp_eigen(U, -s, t, signal)
+def smooth2(t, signal):
+    dim = signal.shape[0]
+    U, s = get_line_laplacian_eigen(dim)
+    return matrix_exp_eigen(U, -s, t, signal)
 
 
 def als_baseline(intensities, asymmetry_param=0.05, smoothness_param=1e6,
@@ -605,7 +605,7 @@ def Normalize(y,zscore,inv):
     if zscore == 0:
         pass
     else:
-        out = np.abs(stats.zscore(y.T))
+        out = np.abs(stats.zscore(y.T)) 
         
         if inv == 0:
             y = y.T[(out < zscore).all(axis=1)].T
@@ -2363,10 +2363,6 @@ def get_line_laplacian_eigen(n):
                 eigen_vectors[i - 1, j - 1] = math_sqrt * np.cos(theta)
     return eigen_vectors, eigen_values
 
-def smooth2(t, signal):
-    dim = signal.shape[0]
-    U, s = get_line_laplacian_eigen(dim)
-    return matrix_exp_eigen(U, -s, t, signal)
 
 def smooth3(t, signal):
     signal_i = signal[0]
@@ -2790,6 +2786,7 @@ def plot_dilution(peak,spectra,number):
             
         toplot = pd.DataFrame(toplot, columns = ['Center (cm-1)','Concentration [M]','Intensity (a.u.)','label'])  
         toplot = toplot.sort_values(by='Intensity (a.u.)').reset_index(drop=True)
+        toplot.to_csv('dilutions_'+toplot['label'].iloc[-1]+'.csv',index=False)  
         
         toplotmax = toplot['Intensity (a.u.)'].max()
         toplotmin = toplot['Intensity (a.u.)'][toplot['Intensity (a.u.)']>0].min()
@@ -4446,7 +4443,13 @@ def Classification(som,data):
 
     
  
-    
+#SOM adapted from
+#@misc{vettigliminisom,
+#  title={MiniSom: minimalistic and NumPy-based implementation of the Self Organizing Map},
+#  author={Giuseppe Vettigli},
+#  year={2018},
+#  url={https://github.com/JustGlowing/minisom/},
+#}    
     
     
     
@@ -4537,13 +4540,13 @@ def Classification(som,data):
 #files = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\own papers\paper 2\figure 7\MIP Melezitose\80nm comparison\7)80nm_st95.txt'
 #    ,
 #         r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\own papers\paper 2\figure 7\MIP Melezitose\80nm comparison\8)80nm_mel_st95.txt']
-
+#
 #files = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\own papers\paper 3\data\Sta_0.001mM_1100_spec_3s_10%_6acc_785nm_01.txt',
 #        r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\own papers\paper 3\data\Sta_0.01mM_1100_spec_3s_10%_6acc_785nm_01.txt',
 #        r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\own papers\paper 3\data\Sta_0.1mM_1100_spec_3s_10%_6acc_785nm_01.txt',
 #        r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\own papers\paper 3\data\Sta_1mM_1100_spec_3s_10%_6acc_785nm_01.txt',
 #        r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\own papers\paper 3\data\Sta_10mM_1100_spec_3s_10%_6acc_785nm_01.txt']
-
+#
 #smooth=7
 #asymmetry_param = 0.05
 #smoothness_param = 1000000
@@ -4551,7 +4554,7 @@ def Classification(som,data):
 #conv_thresh =0.00001
 #zscore=0
 #inv=0   
-    
+#    
     
     
     

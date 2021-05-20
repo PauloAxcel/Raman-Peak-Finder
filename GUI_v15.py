@@ -808,7 +808,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                     distance, box_pairs,dfmelezitose,colours, box_pairs2, names2,colours2,dfdiff = af.DistanceBarPlot(param, targets,dist_substrate, dist_matrix,dist_base, stylestring)
                     af.origin_distance_plot(box_pairs, dfmelezitose,colours)
                     af.cluster_distance_plot(dfdiff,names2,stylestring,box_pairs2,colours2)
-#                    af.density_plot(dfdiff,colours2,names2)
+#                    af.density_plot(dfdiff,colours2,names2) 
                     af.dist_k_calc(finalDf,stylestring,targets,position,colours,dim=2)
                 
                 
@@ -1086,7 +1086,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             plt.rcdefaults()
             font = {'family' : 'Arial', 'size'   : 22}
-            plt.rc('font', **font)      
+            plt.rc('font', **font)        
         
 
         keygen = openkey
