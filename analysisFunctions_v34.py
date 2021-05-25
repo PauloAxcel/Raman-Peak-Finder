@@ -496,6 +496,7 @@ def PlotHeatMap(x,y,label,flag):
         plt.ylim(-1,y.shape[1]+1)
         plt.xlim(-1,y.shape[0]+1)
         ax.set_xticks(xticks)
+        ax.set_xticklabels(xticklabels)
         plt.xlabel('Raman shift (cm$^{-1}$)')
         plt.title(label)
     
@@ -505,6 +506,7 @@ def PlotHeatMap(x,y,label,flag):
         plt.ylim(-1,y.shape[1]+1)
         plt.xlim(-1,y.shape[0]+1)
         ax.set_xticks(xticks)
+        ax.set_xticklabels(xticklabels)
         plt.xlabel('Raman shift (cm$^{-1}$)')
         plt.title(label)
     
@@ -3551,7 +3553,7 @@ def pca_max_dist(maps,smooth,
     PCs =  df.iloc[:,:-1]
     
 #    iterval = np.argmax(np.cumsum(pca.explained_variance_ratio_)>0.95)
-    iterval = 50
+    iterval = 10
         
     for label in list(np.unique(labels)):
         for i in range(iterval):
@@ -3614,6 +3616,8 @@ def pca_max_dist(maps,smooth,
     text = []
     
     plt.rcParams['figure.autolayout'] = True
+    
+    peaksQ = []
     
     for k in range(dist_n):
         lab1 = dist['label0'].iloc[k]
@@ -3744,7 +3748,7 @@ def pca_max_dist(maps,smooth,
 
         i = 0 
     
-        peaksQ = []
+        
         
         for m_1,m_2 in zip(m1,m2):
             
@@ -3807,7 +3811,7 @@ def pca_max_dist(maps,smooth,
     
                     
             for wav in wavenumber[local_max_index3]:
-                reg = fit_region(wavenumber,wav,10)
+                reg = fit_region(wavenumber,wav,10) 
                 
                 if (y2_m[reg[reg==wav].index][0] > 0):
         
@@ -3825,7 +3829,7 @@ def pca_max_dist(maps,smooth,
                             combax[i].plot(wavenumber,_1Lorentzian(wavenumber,*popt_1lorentz),lw=2)
                             combax[i].fill_between(wavenumber, _1Lorentzian(wavenumber,*popt_1lorentz).min(),
                                              _1Lorentzian(wavenumber,*popt_1lorentz), alpha=0.5)
-    
+     
                             peaksQ.append([df['sample'][0]]+popt_1lorentz.tolist()+['Q'+str(i+1)]+[pclab1+pclab2])
 #                            print([df['sample'][0]]+popt_1lorentz.tolist()+['Q'+str(i+1)])
 
@@ -3836,9 +3840,7 @@ def pca_max_dist(maps,smooth,
                     
             i = i + 1
         
-            peak = pd.DataFrame(peaksQ,columns=['label','height','center','width','importance','PCs'] )       
-             
-        peak.to_csv('loadings'+Q+df['sample'][0]+'.csv',sep=';', index=False)
+
 
         axbig.legend(loc='best', frameon=False,prop={'size': 8})    
         axbig2.legend(loc='best', frameon=False,prop={'size': 8})  
@@ -3851,7 +3853,12 @@ def pca_max_dist(maps,smooth,
         text.append([str(round(dist.iloc[k]['dist'],3))+' +/- '+
                      str(round(dist.iloc[k]['er'],3))+' '+pclab1+' - '+pclab2])
         
-        
+    
+    peak = pd.DataFrame(peaksQ,columns=['label','height','center','width','importance','PCs'] )       
+             
+    peak.to_csv('loadings'+Q+df['sample'][0]+'.csv',sep=';', index=False)
+    
+    
     return text
 
 

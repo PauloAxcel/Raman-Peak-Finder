@@ -663,7 +663,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         if zscore<0:
             self.Zscorelow() 
             exit  
-            
+             
         if self.InvCheckBox.isChecked():
             inv = 1
         else:
@@ -688,7 +688,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 if flag == 0:
                     self.norm_warning_applications()
                     
-                    
+                     
                 if len(target)< 2 or len(dataset) <2:
                     self.Zscorelow()
                 else:                        
