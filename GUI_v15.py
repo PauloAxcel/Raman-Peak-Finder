@@ -1,7 +1,7 @@
 import os
 #from matplotlib import pyplot
 import matplotlib.pyplot as plt
-import analysisFunctions_v33 as af
+import analysisFunctions_v34 as af
 
 # GUI:
 import sys
@@ -1138,12 +1138,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 
                 self.resultsBox.setText(text)
                 
-                
-                
-                
-                
 
-                
             
         lockgen = openlock       
   #input a lock and a key lock ie something you want to find out and a key ie a known solution with peaks
