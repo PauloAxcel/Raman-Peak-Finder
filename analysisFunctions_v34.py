@@ -2758,8 +2758,11 @@ def exponential(x,a,b):
 #number = 0
 
 def plot_dilution(peak,spectra,number):
+    
+#    dil_peaks = []
+    
     if number == 0:
-            
+
         df,conc_s = clean_up_rep(peak)
         wavenumber = spectra.iloc[:,-1]
     
@@ -2902,6 +2905,9 @@ def plot_dilution(peak,spectra,number):
                             ax.plot(xnew, fit(xnew, *pars), linestyle='--', linewidth=2,color=color,alpha=alpha)
                             texts.append(ax.text(x[-1], y[-1],str(round(cent,1))+' cm-1'))
                             
+#                            for sx,sy in zip(my_xticks,y):
+#                                dil_peaks.append([cent,sy,sx])
+                            
                             if alpha == 1:
                                 if not conc_s:
                                     bestmatch = 'I(x)='+str(round(pars[0],2))+'(+/-'+str(round(stdevs[0],2))+')*exp(x*'+str(round(pars[1],2))+'(+/-'+str(round(stdevs[1],2))+'))'
@@ -2983,6 +2989,7 @@ def plot_dilution(peak,spectra,number):
         
         toplot = pd.DataFrame(toplot, columns = ['Center (cm-1)','Concentration [M]','Intensity (a.u.)','label'])  
         toplot = toplot.sort_values(by='Intensity (a.u.)').reset_index(drop=True)
+        toplot.to_csv('dilutions_'+toplot['label'].iloc[-1]+'.csv',index=False) 
         
         toplotmax = toplot['Intensity (a.u.)'].max()
         toplotmin = toplot['Intensity (a.u.)'][toplot['Intensity (a.u.)']>0].min()
@@ -3059,6 +3066,10 @@ def plot_dilution(peak,spectra,number):
                         r_squared = 1 - (ss_res / ss_tot)
                         
                         ax.plot(x, y,'o', color = color,alpha=alpha)
+                        
+#                        for sx,sy in zip(my_xticks,y):
+#                            dil_peaks.append([cent,sy,sx])
+                                
                         ax.plot(xnew, fit(xnew, *pars), linestyle='--', linewidth=2,color=color,alpha=alpha)
                         texts.append(ax.text(x[-1], y[-1],str(round(cent,1))+' cm-1'))
                         
@@ -3081,6 +3092,8 @@ def plot_dilution(peak,spectra,number):
                 plt.show()
                 
             adjust_text(texts, autoalign ='xy')  
+    
+#    pd.DataFrame(dil_peaks, columns= ['Raman shift (cm-1)','Intensity (a.u.)','Sample']).to_csv('dilution'+spectra.iloc[:,:-1].columns.tolist()[0]+'.csv',index=False)
         
             
     return bestmatch
@@ -4481,6 +4494,55 @@ def Classification(som,data):
 
     
  
+#file1 = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keymilk_785nm_.csv']
+#file2 =[r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keysaliva_785n.csv']
+#tol = 5
+#dfs = [df1,df2]
+
+
+def cleanfilepeak(dfs):
+    new_dfs = []
+    for df in dfs:
+        index1 = df['height']>0
+        index2 = df['importance']=='major'
+        index3 = df['width']>0
+        index = index1 & index2 & index3
+
+#decided not to group by on the chance that there are multiple values with the same wavenumber
+
+        new_dfs.append(df[index])
+    
+    return new_dfs
+    
+def comparefiles(dfs,tol):
+    dataset = []
+    df1 =  dfs[0]
+    df2 =  dfs[1]
+    
+    for k in df1['center'].unique():
+        for l in df2['center'].unique():
+            if (l<k+tol) & (k-tol<l):
+                dataset.append([k,l,df1['label'][df1['center'] == k].values[0],df2['label'][df2['center'] == l].values[0]])
+                
+    return dataset
+    
+
+def FilePeakMatching(file1,file2,tol):
+    if len(file1) ==1 & len(file2) ==1:
+        df1 = pd.read_csv(file1[0],sep=';')
+        df2 = pd.read_csv(file2[0],sep=';')    
+        
+        newdf1,newdf2 = cleanfilepeak([df1,df2])
+        data = comparefiles([newdf1,newdf2],tol)
+        pd.DataFrame(data,columns=['Center 1','Center 2','Sample 1','Sample 2']).to_csv(file1[0][-15:]+'_'+file2[0][-15:]+'.csv',index=False)
+    else:
+        return 1
+
+    
+    
+    
+
+
 #SOM adapted from
 #@misc{vettigliminisom,
 #  title={MiniSom: minimalistic and NumPy-based implementation of the Self Organizing Map},
