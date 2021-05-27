@@ -4513,6 +4513,8 @@ def cleanfilepeak(dfs):
         new_dfs.append(df[index])
     
     return new_dfs
+
+#dfs = [newdf1,newdf2]
     
 def comparefiles(dfs,tol):
     dataset = []
@@ -4522,7 +4524,7 @@ def comparefiles(dfs,tol):
     for k in df1['center'].unique():
         for l in df2['center'].unique():
             if (l<k+tol) & (k-tol<l):
-                dataset.append([k,l,df1['label'][df1['center'] == k].values[0],df2['label'][df2['center'] == l].values[0]])
+                dataset.append([np.mean([k,l]),df1['label'][df1['center'] == k].values[0]+' | '+df2['label'][df2['center'] == l].values[0]])
                 
     return dataset
     
@@ -4534,7 +4536,7 @@ def FilePeakMatching(file1,file2,tol):
         
         newdf1,newdf2 = cleanfilepeak([df1,df2])
         data = comparefiles([newdf1,newdf2],tol)
-        pd.DataFrame(data,columns=['Center 1','Center 2','Sample 1','Sample 2']).to_csv(file1[0][-15:]+'_'+file2[0][-15:]+'.csv',index=False)
+        pd.DataFrame(data,columns=['center','label']).to_csv(file1[0][-15:]+'_'+file2[0][-15:]+'.csv',index=False)
     else:
         return 1
 

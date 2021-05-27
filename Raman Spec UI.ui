@@ -37,7 +37,7 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>270</y>
+      <y>280</y>
       <width>131</width>
       <height>41</height>
      </rect>
@@ -94,7 +94,7 @@
       <x>330</x>
       <y>10</y>
       <width>461</width>
-      <height>251</height>
+      <height>261</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -680,7 +680,7 @@
        <string>5</string>
       </property>
      </widget>
-     <widget class="QCheckBox" name="SOMCheckBox_2">
+     <widget class="QCheckBox" name="filematchCheckBox">
       <property name="geometry">
        <rect>
         <x>150</x>
@@ -792,7 +792,7 @@
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>270</y>
+      <y>280</y>
       <width>131</width>
       <height>41</height>
      </rect>
@@ -805,7 +805,7 @@
     <property name="geometry">
      <rect>
       <x>460</x>
-      <y>270</y>
+      <y>280</y>
       <width>131</width>
       <height>41</height>
      </rect>
@@ -818,7 +818,7 @@
     <property name="geometry">
      <rect>
       <x>640</x>
-      <y>270</y>
+      <y>280</y>
       <width>131</width>
       <height>41</height>
      </rect>
@@ -831,7 +831,7 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>320</y>
+      <y>720</y>
       <width>151</width>
       <height>21</height>
      </rect>
@@ -890,7 +890,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>250</x>
-      <y>320</y>
+      <y>720</y>
       <width>151</width>
       <height>21</height>
      </rect>
