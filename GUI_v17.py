@@ -1,7 +1,7 @@
 import os
 #from matplotlib import pyplot
 import matplotlib.pyplot as plt
-import analysisFunctions_v36 as af
+import analysisFunctions_v37 as af
 
 # GUI:
 import sys
@@ -13,17 +13,8 @@ import pandas as pd
 from PyQt5.QtWidgets import QListView  
 
 
-empty = pd.DataFrame()
-#def ssPlot(xList, yList):
-#	# Plots stress-strain curve
-#	pyplot.plot(xList, yList) 
-#	pyplot.xlabel("Strain (%)")
-#	pyplot.ylabel("Stress (MPa)")
-#	pyplot.show()
+empty = pd.DataFrame() 
 
-# GUI Stuff
-# Code derived from:
-# http://pythonforengineers.com/your-first-gui-app-with-python-and-pyqt/
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 #substitui \ por / no qtCreatorFile porque dava erro no path
@@ -31,8 +22,7 @@ qtCreatorFile = r"{}/Raman Spec UI.ui".format(dir_path)
  
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 # Initialize variables
-openFile = ""
-testType = "Compression Test"
+
 
 
 
@@ -750,6 +740,35 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                     af.LoadingsPlot(wavenumber,pca,dim = 2)
                     distance_k = af.kdcalc(position,stylestring,dim=2)
                     
+                    
+                    
+                    
+             elif self.LoadingsCheckBox.isChecked() and self.DistanceCheckBox.isChecked():
+                wavenumber,dataset,target,flag = af.sortData(inputFilePath,asymmetry_param, smoothness_param, max_iters, conv_thresh,zscore,inv)
+                if flag == 0:
+                    self.norm_warning_applications()
+                    
+                     
+                if len(target)< 2 or len(dataset) <2:
+                    self.Zscorelow()
+                else:                        
+                    finalDf,targets,info,pca,wavenumber = af.OrganizePCAData(dataset,target,wavenumber,windowmin,windowmax)
+                    
+                    if finalDf.shape[0]<2:
+                        self.Zscorelow() 
+                    
+                    #position.append([pos,width,height,label])
+            
+                    position = af.PCAPlot2D(finalDf,targets,info,flag = 0)
+                    af.LoadingsPlot(wavenumber,pca,dim = 2) 
+                    param, dist_substrate, dist_matrix ,dist_base = af.dist_calc(finalDf,stylestring,targets,position,dim=2)
+                    distance_k = af.kdcalc(position,stylestring,dim=2)
+                    distance, box_pairs,dfmelezitose,colours, box_pairs2, names2,colours2,dfdiff = af.DistanceBarPlot(param, targets,dist_substrate, dist_matrix,dist_base, stylestring)
+                    af.origin_distance_plot(box_pairs, dfmelezitose,colours)
+                    af.cluster_distance_plot(dfdiff,names2,stylestring,box_pairs2,colours2)
+#                    af.density_plot(dfdiff,colours2,names2)
+                    af.dist_k_calc(finalDf,stylestring,targets,position,colours,dim=2)
+                    
        
              elif self.LoadingsCheckBox.isChecked():
                 wavenumber,dataset,target,flag = af.sortData(inputFilePath,asymmetry_param, smoothness_param, max_iters, conv_thresh,zscore,inv)
@@ -956,6 +975,29 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
                     af.PCAPlot3D(finalDf,targets,info,ax,flag = 1)
                     af.LoadingsPlot(wavenumber,pca,dim = 3)
+            
+            elif self.LoadingsCheckBox.isChecked() and self.DistanceCheckBox.isChecked():
+                wavenumber,dataset,target,flag = af.sortData(inputFilePath,asymmetry_param, smoothness_param, max_iters, conv_thresh,zscore,inv)
+                if flag == 0:
+                    self.norm_warning_applications()
+                
+                if len(target)< 2 or len(dataset) <2:
+                    self.Zscorelow()
+                else:                        
+                    finalDf,targets,info,pca,wavenumber = af.OrganizePCAData(dataset,target,wavenumber,windowmin,windowmax)
+                    
+                    if finalDf.shape[0]<2:
+                        self.Zscorelow()
+                        
+                    position = af.PCAPlot3D(finalDf,targets,info,ax,flag = 0)
+                    af.LoadingsPlot(wavenumber,pca,dim = 3)
+                    param, dist_substrate, dist_matrix ,dist_base = af.dist_calc(finalDf,stylestring,targets,position,dim=3)
+                    distance_k = af.kdcalc(position,stylestring,dim=3)
+                    distance, box_pairs,dfmelezitose,colours, box_pairs2, names2,colours2,dfdiff = af.DistanceBarPlot(param, targets,dist_substrate, dist_matrix,dist_base, stylestring)
+                    af.origin_distance_plot(box_pairs, dfmelezitose,colours)
+                    af.cluster_distance_plot(dfdiff,names2,stylestring,box_pairs2,colours2)
+#                    af.density_plot(dfdiff,colours2,names2)
+            
             
             elif self.LoadingsCheckBox.isChecked():
                 wavenumber,dataset,target,flag = af.sortData(inputFilePath,asymmetry_param, smoothness_param, max_iters, conv_thresh,zscore,inv)
