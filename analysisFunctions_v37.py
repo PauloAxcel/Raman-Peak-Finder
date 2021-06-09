@@ -351,7 +351,7 @@ def ShadeStackPlot(x,y1,y2,label,n,fig):
         plt.ylabel(' Intensity (a.u.)')
         plt.legend(loc='best', prop={'size':12},frameon=False)
         fig.show()
-
+ 
 
 
 #issues with the dataframe representation of 2dim lists
