@@ -4514,10 +4514,10 @@ def Classification(som,data):
             
     return classification_report(y_test, result)
 
-    
-# 
-#file2 = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keymilk_785nm_.csv']
-#file1 =[r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keysaliva_785n.csv']
+#    
+#file1 = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\saliva peaks from the literature.csv']
+##file2 = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keymilk_785nm_.csv']
+#file2 =[r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keysaliva_785n.csv']
 #tol = 5
 #dfs = [df1,df2]
 
@@ -4525,13 +4525,23 @@ def Classification(som,data):
 def cleanfilepeak(dfs):
     new_dfs = []
     for df in dfs:
-        index1 = df['height']>0
+        
+        if any(df.columns == 'height'):
+            index1 = df['height']>0
+        else:
+            index1 =  [True]*df.shape[0]
+            
         if (df.columns[-1] == 'Intensity (a.u.)'):
             index2 = df['importance']=='major'
+            
         else:
             index2 = np.array([True]*df.shape[0])
-        
-        index3 = df['width']>0
+            
+        if any(df.columns == 'width'):
+            index3 = df['width']>0
+        else:
+            index3 =  [True]*df.shape[0]
+            
         index = index1 & index2 & index3
 
 #decided not to group by on the chance that there are multiple values with the same wavenumber
@@ -4548,9 +4558,10 @@ def comparefiles(dfs,tol):
     df2 =  dfs[1]
     
 
-    for k in df1['center'].unique(): 
+#    for k in df1['center'].unique(): 
+    for k in df1['center']: 
         index = 0
-        for l in df2['center'].unique():
+        for l in df2['center']:
             if (l<k+tol) & (k-tol<l):
                 
                 if (df1.columns[-1] == 'Intensity (a.u.)') & (df2.columns[-1] == 'Intensity (a.u.)'):
@@ -4577,6 +4588,7 @@ def comparefiles(dfs,tol):
                 
     return dataset
     
+
 
 def FilePeakMatching(file1,file2,tol):
     if len(file1) ==1 & len(file2) ==1:
