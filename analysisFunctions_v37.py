@@ -2159,14 +2159,14 @@ def cluster_distance_plot(dfdiff,names2,stylestring,box_pairs2,colours2):
         
        
 
-def density_plot(dfdiff,colours2,names2):
+def density_plot(dfdiff,colours2,names2): 
     plt.figure(figsize=(9,9/1.618))
     plt.title('Distance between clusters density plot')
     ax = sns.histplot(dfdiff,x="Distance",hue="Substrate",element="poly",palette=colours2,label=names2)
     h,l = ax.get_legend_handles_labels()
     ax.legend(handles=h, labels=list(names2), ncol = len(names2)//6+1)
     
-dim = 3
+#dim = 3
     
 def LoadingsPlot(wavenumber,pca,dim):
     plt.figure(figsize=(9,9/1.618))
@@ -4089,7 +4089,7 @@ def peakloadmatching(keygens,lockgen,tol):
 ###############################################
 #windowmin=700
 #windowmax=1700
-#inputFilePath=files
+##inputFilePath=files
 #smooth=7
 #asymmetry_param = 0.05
 #smoothness_param = 1000000
@@ -4433,19 +4433,32 @@ def NeuronActivationperWavePlot(som, data):
     
     all_heat = []
     
+    #plot heatmap
+    all_ax = []
+    
     for i,col in enumerate(impeak):
         ax = plt.subplot(gs[i])
         z = properties.sort_values(by=['row', 'col'])[col].values.reshape(size,size) 
         all_heat.append(list(z.ravel())+[col])
 #        z = ndimage.rotate(z, 90)
-        ax.imshow(z.T , cmap='cool' , interpolation = 'nearest' ,  vmin = np.nanmin(z) , vmax =np.nanmax(z))
+#        im = ax.imshow(z.T , cmap='cool' , interpolation = 'nearest' ,  vmin = np.nanmin(z) , vmax =np.nanmax(z))
+        
+        new_z = (z.T-np.nanmin(z.T))/(np.nanmax(z.T)-np.nanmin(z.T))
+        im = ax.imshow(new_z , cmap='cool' , interpolation = 'nearest' ,  vmin = np.nanmin(new_z) , vmax =np.nanmax(new_z))
+        
+        
+        
         
         ax.set_title(str(int(col)),fontsize=8.5,y=0.8)
         ax.set_xticklabels([])
         ax.set_yticklabels([])
         plt.gca().invert_yaxis()
+#        plt.colorbar()
 #        plt.gca().invert_xaxis()
         plt.axis('off')
+        all_ax.append(ax)
+        
+    plt.colorbar(im,ax=all_ax,cmap='cool')
 
 
     all_heat = pd.DataFrame(all_heat)
@@ -4608,6 +4621,25 @@ def FilePeakMatching(file1,file2,tol):
 #############################################################################################################################################
 #############################################################################################################################################
 #############################################################################################################################################
+
+#windowmin=700
+#windowmax=1700
+#keygen = inputFilePath
+#smooth=7
+#asymmetry_param = 0.05
+#smoothness_param = 1000000
+#max_iters = 10
+#conv_thresh =0.00001
+#zscore=3
+#inv=0  
+#neuron = 3
+#
+#data = ImportDataSOM(keygen,windowmin,windowmax,zscore)
+#som = LoadSOM(data,neuron)
+#HexagonaSOMPlot(som,data)
+#NeuronActivationperWavePlot(som, data)
+#text = Classification(som,data)
+
 
 #inputFilePath = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
 #                 r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\milk_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt']

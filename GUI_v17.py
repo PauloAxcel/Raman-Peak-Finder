@@ -1134,7 +1134,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         keygen = openkey
 #        print(keygen)
         if not keygen:
-            self.nofile_warning_applications()  
+            self.nofile_warning_applications()   
             
             
         lockgen = openlock 
