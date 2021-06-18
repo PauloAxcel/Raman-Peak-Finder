@@ -1,7 +1,7 @@
 import os 
 #from matplotlib import pyplot
 import matplotlib.pyplot as plt
-import analysisFunctions_v38 as af
+import analysisFunctions_v41 as af 
 
 # GUI:
 import sys
@@ -22,8 +22,6 @@ qtCreatorFile = r"{}/Raman Spec UI.ui".format(dir_path)
  
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 # Initialize variables
-
-
 
 
 
@@ -423,7 +421,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 norm,norm2 = af.NormalizeNAVGS(baseline,zscore,inv,asymmetry_param, smoothness_param, max_iters, conv_thresh)
                 spectra = af.diff(norm,norm2)
                 af.StackPlot(wavenumber, spectra, norm2,label, fig)
-                
+                 
                 
             elif self.baselineCheckBox.isChecked() and self.stdCheckBox.isChecked():
                 wavenumber,z,label,sstd = af.spec(inputFilePath)
@@ -1176,7 +1174,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 af.PlotAvgSpec(data,windowmin,windowmax)
                 af.HexagonaSOMPlot(som,data)
                 af.NeuronActivationperWavePlot(som, data)
-                af.NeuronActivationperPlot(som, data,smooth)
+                af.NeuronActivationperPlot(som, data,smooth,neuron)
                 text = af.Classification(som,data)
                 
                 self.resultsBox.setText(text)
@@ -1189,6 +1187,9 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         if keygen and lockgen:
             if self.LoadingsCheckBox_2.isChecked() and self.matchCheckBox.isChecked():
                 af.peakloadmatching(keygen,lockgen,tol)
+                
+            elif self.SOMCheckBox.isChecked() and self.matchCheckBox.isChecked():
+                af.peakSOMmatching(keygen,lockgen,tol,neuron)
                 
             elif self.matchCheckBox.isChecked():
                 af.peakmatching(keygen,lockgen,tol)
