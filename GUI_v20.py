@@ -1,7 +1,7 @@
 import os 
 #from matplotlib import pyplot
 import matplotlib.pyplot as plt
-import analysisFunctions_v43 as af  
+import analysisFunctions_v45 as af  
 
 # GUI:
 import sys
@@ -10,7 +10,7 @@ from PyQt5.QtCore import QTimer, pyqtSignal, QEvent
 from PyQt5.QtWidgets import QApplication, QMessageBox, QPushButton, QFrame, QLabel, QWidget, QVBoxLayout
 import signal
 import pandas as pd
-from PyQt5.QtWidgets import QListView  
+from PyQt5.QtWidgets import QListView   
 
 
 empty = pd.DataFrame() 
@@ -56,7 +56,7 @@ class CustomMessageBox(QMessageBox):
 
 
 
-
+ 
 
 class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
     filePath = ""
@@ -419,7 +419,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                     
                 baseline = af.BaselineNAVGS(z,asymmetry_param, smoothness_param, max_iters, conv_thresh)
                 norm,norm2 = af.NormalizeNAVGS(baseline,zscore,inv,asymmetry_param, smoothness_param, max_iters, conv_thresh)
-                spectra = af.diff(norm,norm2)
+                spectra = af.diff2(norm,norm2,norm.std().mean())
                 af.StackPlot(wavenumber, spectra, norm2,label, fig)
                  
                 
@@ -431,7 +431,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 
                 baseline = af.BaselineNAVGS(z,asymmetry_param, smoothness_param, max_iters, conv_thresh)              
                 baseline,baselinesstd = af.STDS(baseline)
-                spectra = af.diff(baseline,baselinesstd)
+                spectra = af.diff2(baseline,baselinesstd,baseline.std().mean())
                 af.StackPlot(wavenumber, spectra, baselinesstd,label, fig)
                     
                             
@@ -443,14 +443,14 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 
                 z = af.separate_stack(z)
                 norm,norm2 = af.NormalizeNAVGS(z,zscore,inv,asymmetry_param, smoothness_param, max_iters, conv_thresh)
-                spectra = af.diff(norm,norm2)
+                spectra = af.diff2(norm,norm2,norm.std().mean())
                 af.StackPlot(wavenumber, spectra, norm2,label, fig)
                 
             elif self.baselineCheckBox.isChecked() and self.normalizationCheckBox.isChecked():
                 wavenumber,z,label,sstd = af.spec(inputFilePath)                
                 baseline = af.BaselineNAVGS(z,asymmetry_param, smoothness_param, max_iters, conv_thresh)
                 norm,norm2 = af.NormalizeNAVGS(baseline,zscore,inv,asymmetry_param, smoothness_param, max_iters, conv_thresh)
-                spectra = af.diff(norm,empty)
+                spectra = af.diff2(norm,empty,norm.std().mean())
                 af.StackPlot(wavenumber, spectra, empty,label, fig)
                 
             elif self.stdCheckBox.isChecked():
@@ -461,7 +461,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 z = af.separate_stack(z)
                 z,sstd = af.STDS(z)
-                spectra = af.diff(z,sstd)
+                spectra = af.diff2(z,sstd,z.std().mean())
                 af.StackPlot(wavenumber, spectra, sstd,label, fig)
                 
             elif self.baselineCheckBox.isChecked():
@@ -469,7 +469,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 
                 baseline = af.BaselineNAVGS(z,asymmetry_param, smoothness_param, max_iters, conv_thresh)              
                 baseline,baselinesstd = af.STDS(baseline)
-                spectra = af.diff(baseline,empty)
+                spectra = af.diff2(baseline,empty,baseline.std().mean())
                 af.StackPlot(wavenumber, spectra, empty,label, fig)
                 
             elif self.normalizationCheckBox.isChecked():
@@ -477,7 +477,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 
                 z = af.separate_stack(z) 
                 norm,norm2 = af.NormalizeNAVGS(z,zscore,inv,asymmetry_param, smoothness_param, max_iters, conv_thresh)
-                spectra = af.diff(norm,empty)
+                spectra = af.diff2(norm,empty,norm.std().mean())
                 af.StackPlot(wavenumber, spectra, empty,label, fig)
                 
             else:
@@ -485,7 +485,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 
                 z = af.separate_stack(z)
                 z,sstd = af.STDS(z)
-                spectra = af.diff(z,empty)
+                spectra = af.diff2(z,empty,z.std().mean())
                 af.StackPlot(wavenumber, spectra, empty,label, fig)
                 
                 
