@@ -1,7 +1,7 @@
 import os 
 #from matplotlib import pyplot
 import matplotlib.pyplot as plt
-import analysisFunctions_v45 as af  
+import analysisFunctions_v46 as af  
 
 # GUI:
 import sys
@@ -1172,7 +1172,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 data = af.ImportDataSOM(keygen,windowmin,windowmax,zscore)
                 som = af.LoadSOM(data,neuron)
                 af.PlotAvgSpec(data,windowmin,windowmax)
-                af.HexagonaSOMPlot(som,data)
+                af.HexagonaSOMPlot(som,data,neuron)
                 af.NeuronActivationperWavePlot(som, data)
                 af.NeuronActivationperPlot(som, data,smooth,neuron)
                 text = af.Classification(som,data)
@@ -1186,7 +1186,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 
         if keygen and lockgen:
             if self.LoadingsCheckBox_2.isChecked() and self.matchCheckBox.isChecked():
-                af.peakmatching(keygen,lockgen,tol,'loading')
+                af.peakmatching(keygen,lockgen,tol,'loading') 
                 
             elif self.SOMCheckBox.isChecked() and self.matchCheckBox.isChecked():
                 af.peakmatching(keygen,lockgen,tol,'som')
