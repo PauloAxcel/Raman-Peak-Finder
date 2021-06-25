@@ -1186,7 +1186,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 
         if keygen and lockgen:
             if self.LoadingsCheckBox_2.isChecked() and self.matchCheckBox.isChecked():
-                af.peakmatching(keygen,lockgen,tol,'loading') 
+                af.peakmatching(keygen,lockgen,tol,'loading')  
                 
             elif self.SOMCheckBox.isChecked() and self.matchCheckBox.isChecked():
                 af.peakmatching(keygen,lockgen,tol,'som')
