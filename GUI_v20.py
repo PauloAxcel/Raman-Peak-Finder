@@ -1192,7 +1192,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 af.peakmatching(keygen,lockgen,tol,'som')
                 
             elif self.matchCheckBox.isChecked():
-                af.peakmatching(keygen,lockgen,tol,'standard')
+                af.peakmatching(keygen,lockgen,tol,'standard') 
             
             elif self.filematchCheckBox.isChecked():
                 flag = af.FilePeakMatching(keygen,lockgen,tol)

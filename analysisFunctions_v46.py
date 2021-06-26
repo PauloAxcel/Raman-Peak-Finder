@@ -403,7 +403,7 @@ def spec(inputFilePath):
 #        else:           
         spec_std.append(ImportData(file)[1])
         
-        #works for testing
+#        works for testing
 #        label.append(file.split('\\')[-1][:11])
         
         label.append(file.split('/')[-1][:15]) 
@@ -4253,31 +4253,36 @@ def peakmatching(keygens,lockgens,tol,operator):
 
 ##################SOM##########################
 ###############################################
-#windowmin=700
-#windowmax=1700
-##inputFilePath=files
-#smooth=7
-#asymmetry_param = 0.05
-#smoothness_param = 1000000
-#max_iters = 10
-#conv_thresh =0.00001
-#zscore=3
-#inv=0  
-#    
+windowmin=700
+windowmax=1700
+#inputFilePath=files
+smooth=7
+asymmetry_param = 0.05
+smoothness_param = 1000000
+max_iters = 10
+conv_thresh =0.00001
+zscore=3
+inv=0  
+    
 #keygen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\01st_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
 #          r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\02nd_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
 #          r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\03rd_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
 #          r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\04th_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
 #          r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\05th_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt']
-#neuron = 3
-##
-#data = ImportDataSOM(keygen,windowmin,windowmax,zscore)
-#som = LoadSOM(data,neuron)
-#PlotAvgSpec(data,windowmin,windowmax)
-#HexagonaSOMPlot(som,data,neuron)
-#NeuronActivationperWavePlot(som, data)
-#text = Classification(som,data)
-#NeuronActivationperPlot(som, data,smooth,neuron)
+neuron = 10
+
+
+keygen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\emma\Male vs Female\Female.txt',
+          r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\emma\Male vs Female\Male.txt']
+
+
+data = ImportDataSOM(keygen,windowmin,windowmax,zscore)
+som = LoadSOM(data,neuron)
+PlotAvgSpec(data,windowmin,windowmax)
+HexagonaSOMPlot(som,data,neuron)
+NeuronActivationperWavePlot(som, data)
+text = Classification(som,data)
+NeuronActivationperPlot(som, data,smooth,neuron)
 
 import matplotlib.patches as patches
 
@@ -4642,7 +4647,7 @@ def ColorHexBins(plot_points,cla_col,wy,wx):
     index2 =  df_color_hex['pos y']==uni[1]
     index = index1 & index2
 
-    df_clean = df_color_hex[index].reset_index(drop=True)
+    df_clean = df_color_hex[index].reset_index(drop=True) 
     
     counts = []
     
@@ -4654,8 +4659,8 @@ def ColorHexBins(plot_points,cla_col,wy,wx):
     counts = pd.DataFrame(counts,columns=['counts','label'])
     counts = counts.sort_values(by='counts')
     
-    if counts['counts'].iloc[-1] == 0:
-        final_c.append('gray')
+    if counts.empty or counts['counts'].iloc[-1] == 0:
+        final_c.append((0.5,0.5,0.5,1))
     else:
         index4 =  df_color_hex['pos x']==uni[0]
         index5 =  df_color_hex['pos y']==uni[1]
@@ -4752,7 +4757,8 @@ def HexagonaSOMPlot(som,data,neuron):
         for j in range(weights.shape[1]):
             wy = yy[(i, j)] * np.sqrt(3) / 2
             wx = xx[(i, j)] + pd.DataFrame(a).values[(i,j)]
-            
+#            try:
+                    
             hexa = RegularPolygon((wx, wy), 
                                  numVertices=6, 
                                  radius=.95 / np.sqrt(3),
@@ -4761,6 +4767,8 @@ def HexagonaSOMPlot(som,data,neuron):
                                  linewidth=5,
                                  edgecolor= ColorHexBins(plot_points,cla_col,wy,wx))
             ax.add_patch(hexa)
+#            except:
+#                print(wx,wy)
     
     
     
