@@ -581,14 +581,18 @@ def BaselineNAVGS(y,asymmetry_param, smoothness_param, max_iters, conv_thresh):
     sp = pd.DataFrame(np.transpose(a),columns=np.transpose(b))
     
     return sp
-    
+
+
+#NOTE THE i != sp.shape[1]-1 GAVE ERROR WHEN THERE ARE ONLY 2 SPECTRA PER MAP... IDK WHY
+# COULD POTENTIALLY BE REMOVED?
+ 
 def STDS(sp):
     a = []
     b = []
     c = []
     j = -1
     for i in range(sp.shape[1]):
-        if sp.columns[i] > j and i != sp.shape[1]-1:
+        if sp.columns[i] > j and i != sp.shape[1]: 
 
             a.append(sp.iloc[:,i])
             j = j + 1
@@ -4253,36 +4257,36 @@ def peakmatching(keygens,lockgens,tol,operator):
 
 ##################SOM##########################
 ###############################################
-windowmin=700
-windowmax=1700
-#inputFilePath=files
-smooth=7
-asymmetry_param = 0.05
-smoothness_param = 1000000
-max_iters = 10
-conv_thresh =0.00001
-zscore=3
-inv=0  
-    
-#keygen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\01st_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
-#          r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\02nd_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
-#          r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\03rd_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
-#          r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\04th_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
-#          r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\05th_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt']
-neuron = 10
-
-
-keygen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\emma\Male vs Female\Female.txt',
-          r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\emma\Male vs Female\Male.txt']
-
-
-data = ImportDataSOM(keygen,windowmin,windowmax,zscore)
-som = LoadSOM(data,neuron)
-PlotAvgSpec(data,windowmin,windowmax)
-HexagonaSOMPlot(som,data,neuron)
-NeuronActivationperWavePlot(som, data)
-text = Classification(som,data)
-NeuronActivationperPlot(som, data,smooth,neuron)
+#windowmin=700
+#windowmax=1700
+##inputFilePath=files
+#smooth=7
+#asymmetry_param = 0.05
+#smoothness_param = 1000000
+#max_iters = 10
+#conv_thresh =0.00001
+#zscore=3
+#inv=0  
+#    
+##keygen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\01st_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
+##          r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\02nd_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
+##          r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\03rd_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
+##          r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\04th_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
+##          r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\05th_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt']
+#neuron = 10
+#
+#
+#keygen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\emma\Male vs Female\Female.txt',
+#          r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\emma\Male vs Female\Male.txt']
+#
+#
+#data = ImportDataSOM(keygen,windowmin,windowmax,zscore)
+#som = LoadSOM(data,neuron)
+#PlotAvgSpec(data,windowmin,windowmax)
+#HexagonaSOMPlot(som,data,neuron)
+#NeuronActivationperWavePlot(som, data)
+#text = Classification(som,data)
+#NeuronActivationperPlot(som, data,smooth,neuron)
 
 import matplotlib.patches as patches
 

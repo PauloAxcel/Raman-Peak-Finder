@@ -490,7 +490,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 
                 
         if self.HelperCheckBox.isChecked():
-            self.resultsBox.setText(' '.join(text))        
+            self.resultsBox.setText(' '.join(text))         
 #            n = n + 1
 
 
