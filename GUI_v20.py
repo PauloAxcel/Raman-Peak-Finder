@@ -5,7 +5,7 @@ import analysisFunctions_v46 as af
 
 # GUI:
 import sys
-from PyQt5 import QtCore, QtGui, uic,  QtWidgets, Qt 
+from PyQt5 import QtCore, QtGui, uic,  QtWidgets, Qt  
 from PyQt5.QtCore import QTimer, pyqtSignal, QEvent
 from PyQt5.QtWidgets import QApplication, QMessageBox, QPushButton, QFrame, QLabel, QWidget, QVBoxLayout
 import signal

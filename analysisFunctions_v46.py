@@ -4024,14 +4024,37 @@ def diff2(spectra,spectra_std,const):
     return pd.DataFrame(new_spec).T 
     
     
-    
+lockgens = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\saliva_all.txt',
+            r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\milk_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt']
+
+keygens = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keysaliva_all..csv']
+
+tol = 5
+
+operator = 'standard'
+
+
+
+def fit_region2(wavenumber,pos,tol = 10):
+    min_l = min(wavenumber.index.tolist())
+    max_l = max(wavenumber.index.tolist())
+    index = wavenumber.index[(wavenumber>pos-1) & (wavenumber<pos+1)].tolist()[0]
+    index1 = index-tol
+    index2 = index+tol
+    if index1<min_l:
+        index1 = 0
+    if index2>max_l:
+        index2 = max_l
+        
+    return wavenumber[index1:index2]
+
+
     
 def peakmatching(keygens,lockgens,tol,operator):
     if operator == 'standard':
         
         all_spec = []
         dataset = []  
-        
         for lockgen in lockgens:
                 
             if lockgen.split('\\')[-1].split('.')[-1] == 'txt':
@@ -4074,7 +4097,7 @@ def peakmatching(keygens,lockgens,tol,operator):
                 for k in key['center'].unique():
                     for l in lock['center'].unique():
                         if (l<k+tol) & (k-tol<l):
-                            dataset.append([k,key['label'][key['center'] == k].values[0],lock['label'][lock['center'] == l].values[0]])   
+                            dataset.append([k,key['label'][key['center'] == k].values[0],lock['label'][lock['center'] == l].values[0]])
                             
 
         spec = []
@@ -4083,19 +4106,93 @@ def peakmatching(keygens,lockgens,tol,operator):
             wavenumber = spe.iloc[:,1]
         
         spec = pd.DataFrame(spec).T
-        stack = diff2(spec,pd.DataFrame(),spec.std().mean())
+        stack = diff2(spec,pd.DataFrame(),1.5*spec.std().mean())
         
         fig,ax = plt.subplots(figsize=(9,9/1.618)) 
-        ax.plot(wavenumber,stack, label = stack.columns)  
+        ax.plot(wavenumber,stack, label = stack.columns.tolist())  
         
         for data in dataset:
             ax.fill_between(np.linspace(data[0]-tol,data[0]+tol,10),stack[data[-1]].max(),stack[data[-1]].min(),color='yellow',alpha=1/3)
             ax.text(data[0]-tol,stack[data[-1]].min(),data[1][:4],rotation=90,fontsize='xx-small')
-        
+            
         ax.legend(loc='best',frameon=False)
         ax.set_xlabel('Raman shift $(cm^{-1})$')
         ax.set_ylabel('Intensity (a. u.)')
         plt.show()
+        
+        
+            
+        df_dataset = pd.DataFrame(dataset,columns=['center','key','lock'])
+        
+        max_value = []
+        min_value = []
+        
+        lab = stack.columns.tolist()
+        fig2,ax2 = plt.subplots(figsize=(9,9/1.618))
+        ax2.plot(wavenumber,stack, label = lab)  
+        fig3,ax3 = plt.subplots(figsize=(9,9/1.618))
+        
+        for i in range(stack.shape[1]):
+
+            intensity_b = stack.iloc[:,i]
+            max_value.append(intensity_b.max())
+            min_value.append(intensity_b.min())
+
+            
+            smoothed_signal = smooth2(7,  intensity_b)
+            smoothed_signal = Normalize(smoothed_signal,0,0)
+            
+            lorentz = []
+
+            for data in df_dataset[df_dataset['lock']==lab[i]].values.tolist():
+                wav = data[0]
+        
+                reg = fit_region2(wavenumber,wav,10)
+                
+                try:
+                    popt_1lorentz, pcov_1lorentz = scipy.optimize.curve_fit(_1Lorentzian, 
+                                                                    reg, 
+                                                                    smoothed_signal[reg.index],
+                                                                    p0=[smoothed_signal[reg.index].max(), wav,  2/(np.pi*smoothed_signal[reg.index].max())])
+                    
+                    perr_1lorentz = np.sqrt(np.diag(pcov_1lorentz))
+            
+                    pars_1 = popt_1lorentz[0:3]
+                    
+                    if (abs(pars_1[-1])>100) | (pars_1[0]<0):
+                        pass
+                    else:
+                        
+                        lorentz_peak_1 = _1Lorentzian(reg, *pars_1)
+                        
+                        ax2.plot(wavenumber,_1Lorentzian(wavenumber,*popt_1lorentz)*max_value[i]+min_value[i],label= df_dataset['key'].unique()[0])
+                        ax2.fill_between(wavenumber, _1Lorentzian(wavenumber,*popt_1lorentz)*max_value[i]+min_value[i],
+                                             _1Lorentzian(wavenumber,*popt_1lorentz)+min_value[i], alpha=0.5)
+                        
+                        
+            
+                        lorentz.append(_1Lorentzian(wavenumber,*popt_1lorentz))
+
+                except:
+                    pass
+         
+            
+            
+#            lorentz_all = Normalize(Baseline(pd.DataFrame(lorentz).mean() ,0.05,  1000000, 10, 0.00001),0,0)
+#            residual_1lorentz = (smoothed_signal - lorentz_all)*max_value[i]+min_value[i]
+                    
+            lorentz_all = Baseline(pd.DataFrame(lorentz).sum() ,0.05,  1000000, 10, 0.00001)*max_value[i]+min_value[i]
+            residual_1lorentz = (intensity_b - lorentz_all)
+            
+
+            ax3.plot(wavenumber,residual_1lorentz+min_value[i], label = lab[i]+'residue')  
+            
+            
+            
+        
+        
+        
+
         
     if operator == 'loading':
             
