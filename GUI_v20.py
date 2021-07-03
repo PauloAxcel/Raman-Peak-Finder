@@ -10,7 +10,7 @@ from PyQt5.QtCore import QTimer, pyqtSignal, QEvent
 from PyQt5.QtWidgets import QApplication, QMessageBox, QPushButton, QFrame, QLabel, QWidget, QVBoxLayout
 import signal
 import pandas as pd
-from PyQt5.QtWidgets import QListView   
+from PyQt5.QtWidgets import QListView    
 
 
 empty = pd.DataFrame() 
@@ -23,7 +23,7 @@ qtCreatorFile = r"{}/Raman Spec UI.ui".format(dir_path)
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 # Initialize variables
 
-
+ 
 
 class CustomMessageBox(QMessageBox):
 
@@ -588,7 +588,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 
                 if sstd == []:
                     self.single_warning_applications()
-                
+                 
                 z = af.separate_stack(z)
                 z,sstd = af.STDS(z)
                 spectra = af.diff(z,sstd)

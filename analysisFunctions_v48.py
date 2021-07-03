@@ -4196,7 +4196,7 @@ def peakmatching(keygens,lockgens,tol,operator):
             
             smoothed_signal = smooth2(7,  intensity_b)
             smoothed_signal = Normalize(smoothed_signal,0,0)
-            
+             
             lorentz = []
             
             
@@ -4218,7 +4218,7 @@ def peakmatching(keygens,lockgens,tol,operator):
                 
                 if  data == [] or any(data[0][0][:len(wav)]>intensity_b.max()*1.2):
                     continue
-                
+                 
 
                     
                 for pop,pcov in data:
@@ -5200,6 +5200,15 @@ def comparefiles(dfs,tol):
 #        clean_master('MASTERKEY.csv')
 
 
+keygen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keymilk_785nm_.csv']
+
+lockgen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\key01st_saliva.csv',
+           r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\key02nd_saliva.csv',
+           r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\key03rd_saliva.csv',
+           r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\key04th_saliva.csv',
+           r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keymilk_785nm_.csv']
+
+tol = 5
 
 def FilePeakMatching(keygen,lockgen,tol):
     
@@ -5222,7 +5231,7 @@ def FilePeakMatching(keygen,lockgen,tol):
     name1 = keygen[0].split('/')[-1]
     name2 = lockgen[0].split('/')[-1]
     
-    #test
+#    test
 #    name1 = keygen[0].split('\\')[-1]
 #    name2 = lockgen[0].split('\\')[-1]
     
@@ -5231,12 +5240,12 @@ def FilePeakMatching(keygen,lockgen,tol):
     dataset = pd.DataFrame(data,columns=['center','label','ratio','err'])
     dataset.to_csv(name1+'_'+name2+'.csv',index=False)
     
-    dataset2 = orderfiles(dataset)
+    dataset2,code = orderfiles(dataset)
     
     shape = len(df1['label'].unique())
     
     plotpoints(dataset2,shape)
-    centerpointplots(dataset2,shape)
+    centerpointplots(dataset2,shape,code)
 
 
     return 1
@@ -5297,31 +5306,62 @@ def checklabelloc(data,c):
     return len(label) == len(set(label))
     
 
+from sklearn import preprocessing
+
+
+
+
 def orderfiles(dataset):
-    new_label = []
+#    new_label = []
+    
     
     labels = dataset['label'].tolist()
-    for lab in labels:
+    
+    le = preprocessing.LabelEncoder()
+    le.fit(labels)
+    
+    
+    order = []
+    for lab in dataset['label'].tolist():
         split = lab.split(' ')
         if split[0] == split[-1]:
-            new_label.append(str(0))
+            order.append(0)
         else:
-            num = re.findall(r"([\d.]*\d+)", lab)
-            if hasNumbers(num):
-                if len(num)<2 and int(num[0])>100:
-                    new_label.append(lab)
-                else:
-                    new_label.append(str(min([int(a) for a in num])))
-            else:
-                new_label.append(lab)
+            #the +1 is to make sure that the 0 position is allocated for the same label case
+            order.append(le.transform([lab])[0]+1)
+            
+    dataset['new label'] = pd.DataFrame(order)
+
+        
     
-    dataset['new label'] = new_label
+
+#    new_label = le.transform(labels)
     
-    return dataset
+
+#    for lab in labels:
+#        split = lab.split(' ')
+#        if split[0] == split[-1]:
+#            new_label.append(str(0))
+#        else:
+#            num = re.findall(r"([\d.]*\d+)", lab)
+#            if hasNumbers(num):
+#                if len(num)<2 and int(num[0])>100:
+#                    new_label.append(lab)
+#                else:
+#                    new_label.append(str(min([int(a) for a in num])))
+#            else:
+#                new_label.append(lab)
+#    
+#    dataset['new label'] = new_label
+#    dataset = dataset.drop('order',axis=1)
+    
+    code = [dataset['label'].unique(),pd.Series(order).unique()]
+    
+    return dataset,code
     
 
 
-def centerpointplots(dataset,shape):
+def centerpointplots(dataset,shape,code):
     
     # clusters = cluster(sorted(dataset['center'].values),5)
     iterate = int(len(dataset['label'].unique())/shape) 
@@ -5383,7 +5423,7 @@ def centerpointplots(dataset,shape):
                 
     #                print(df)
                 
-                
+                 
                 try:   
                     pars, cov = curve_fit(f=fit, xdata=xx, ydata=y, p0=[1, 1])
                     stdevs = np.sqrt(np.diag(cov))
@@ -5394,14 +5434,17 @@ def centerpointplots(dataset,shape):
     
                     plt.errorbar(x,y,yerr=yerr,fmt='s',capsize=5,label = str(round(cs,1)))
                     plt.plot(xx, fit(xx, *pars), color='r',linestyle='--', linewidth=2)
-                    plt.text(xx.max()*0.6, y.max()*0.95,'$R^{2}=$'+str(round(r_squared,2)))
-                    plt.text(xx.max()*0.5, y.max()*0.9,'ratio = '+str(round(pars[0],2))+'$x + $'+str(round(pars[1],2)))   
+                    plt.text(xx.max()*0.8, y.max()*0.925,'$R^{2}=$'+str(round(r_squared,2)),fontsize='xx-small')
+                    plt.text(xx.max()*0.6, y.max()*0.9,'ratio = '+str(round(pars[0],2))+'$x + $'+str(round(pars[1],2)),fontsize='xx-small')
+                    
                 except:
                     plt.errorbar(x,y,yerr=df['err'],fmt='s',capsize=5,label = str(round(cs,1)))
     
     
                 plt.xlabel('Sample')
-                plt.legend(loc='best', prop={'size':12},frameon=False)
+                plt.xticks(range(iterate))
+                plt.text(xx.min(),y.min(),''.join([str(a)+' : '+str(b)+'\n' for a,b in zip(code[0],code[1])]),fontsize='xx-small')
+                plt.legend(loc='upper right', prop={'size':12},frameon=False)
                 plt.show()
 
 
