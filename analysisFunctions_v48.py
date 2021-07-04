@@ -229,6 +229,11 @@ def ImportData(inputFilePath):
     return (wavenumber, intensity, n_points, n_raman, label,flag)
 
 
+#x=wavenumber
+#y = spectra
+#y2 = pd.DataFrame()
+#fig = plt.figure()
+
 
 def StackPlot(x,y,y2,label,fig): 
 #    print(label)
@@ -388,6 +393,12 @@ def wavdif(wavenumber,spec,spec_std):
         wavenumber = wavenumber[0]
 
     return spec,spec_std,wavenumber
+
+
+#inputFilePath = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
+#                 r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\milk_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
+#                 r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\01st_saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt',
+#                 ]
 
 
 def spec(inputFilePath):
@@ -554,6 +565,8 @@ def BaselineNAVG(y,asymmetry_param, smoothness_param, max_iters, conv_thresh):
     return z    
 #ax = plt.axes(projection = '3d')      
 
+#y = spec
+
 def separate_stack(y):
     a = []
     b = []
@@ -592,7 +605,7 @@ def STDS(sp):
     c = []
     j = -1
     for i in range(sp.shape[1]):
-        if sp.columns[i] > j and i != sp.shape[1]: 
+        if sp.columns[i] > j and i != sp.shape[1]-1: 
 
             a.append(sp.iloc[:,i])
             j = j + 1
@@ -3984,6 +3997,10 @@ def cluster(data, maxgap):
     ############################PEAK FINDER ALL IN ONE
     #########################################################################################################
 #
+   
+#spectra = sp
+#spectra_std = pd.DataFrame()
+#const = sp.std().mean()
     
 def diff2(spectra,spectra_std,const):
     
@@ -4023,6 +4040,7 @@ def diff2(spectra,spectra_std,const):
                 
     return pd.DataFrame(new_spec).T 
     
+#spectra = pd.DataFrame(new_spec).T 
     
 #lockgens = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\saliva_all.txt',
 #            r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\milk_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt']
@@ -4225,7 +4243,7 @@ def peakmatching(keygens,lockgens,tol,operator):
                     ax2.plot(wavenumber,_nLorentzian(wavenumber,*pop)+stack.iloc[:,i].min())
                     ax2.fill_between(wavenumber, _nLorentzian(wavenumber,*pop)+stack.iloc[:,i].min(),
                                          stack.iloc[:,i].min(), color = colours[count],
-                                         label= df_dataset['lock'].unique()[i][:2]+' at '+str([round(a,1) for a in wav]),alpha=0.5)
+                                         label= df_dataset['key'].unique()[i][:4]+' at '+str([round(a,1) for a in wav]),alpha=0.5)
                     
                     ax2.legend(loc='best', fontsize='xx-small',frameon=False,ncol=4)
                     ax2.set_xlabel('Raman shift $(cm^{-1})$')
@@ -4238,7 +4256,8 @@ def peakmatching(keygens,lockgens,tol,operator):
             residual_1lorentz = intensity_b - lorentz_all
             
     
-            ax3.plot(wavenumber,residual_1lorentz+min_value[i], label = lab[i]+'residue')  
+            ax3.plot(wavenumber,residual_1lorentz+min_value[i], label = lab[i][:4]+' - '+df_dataset['key'].unique()[i][:4]+' residue')  
+            ax3.hlines(0,wavenumber.min(),wavenumber.max(),ls='--',color='r')
             ax3.legend(loc='best', prop={'size':12},frameon=False)
             ax3.set_xlabel('Raman shift $(cm^{-1})$')
             ax3.set_ylabel('Intensity (a. u.)')
@@ -5200,15 +5219,13 @@ def comparefiles(dfs,tol):
 #        clean_master('MASTERKEY.csv')
 
 
-keygen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keymilk_785nm_.csv']
-
-lockgen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\key01st_saliva.csv',
-           r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\key02nd_saliva.csv',
-           r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\key03rd_saliva.csv',
-           r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\key04th_saliva.csv',
-           r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keymilk_785nm_.csv']
-
-tol = 5
+#keygen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keymilk_785nm_.csv']
+#
+#lockgen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\key01st_saliva.csv',
+#           r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keysaliva_785n.csv',
+#           r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keymilk_785nm_.csv']
+#
+#tol = 5
 
 def FilePeakMatching(keygen,lockgen,tol):
     
@@ -5312,50 +5329,35 @@ from sklearn import preprocessing
 
 
 def orderfiles(dataset):
-#    new_label = []
-    
-    
-    labels = dataset['label'].tolist()
-    
-    le = preprocessing.LabelEncoder()
-    le.fit(labels)
-    
     
     order = []
-    for lab in dataset['label'].tolist():
+    for cnt, lab in enumerate(dataset['label'].unique()):
         split = lab.split(' ')
         if split[0] == split[-1]:
+#            a = cnt
             order.append(0)
         else:
-            #the +1 is to make sure that the 0 position is allocated for the same label case
-            order.append(le.transform([lab])[0]+1)
-            
-    dataset['new label'] = pd.DataFrame(order)
-
-        
-    
-
-#    new_label = le.transform(labels)
-    
-
-#    for lab in labels:
-#        split = lab.split(' ')
-#        if split[0] == split[-1]:
-#            new_label.append(str(0))
-#        else:
-#            num = re.findall(r"([\d.]*\d+)", lab)
-#            if hasNumbers(num):
-#                if len(num)<2 and int(num[0])>100:
-#                    new_label.append(lab)
-#                else:
-#                    new_label.append(str(min([int(a) for a in num])))
+            order.append(cnt+1)
+#            if cnt == 0:
+#                order.append(np.nan)
 #            else:
-#                new_label.append(lab)
-#    
-#    dataset['new label'] = new_label
-#    dataset = dataset.drop('order',axis=1)
+#                order.append(cnt)
+            #the +1 is to make sure that the 0 position is allocated for the same label case
+               
+#    order = [a if math.isnan(x) else x for x in order]
+
     
-    code = [dataset['label'].unique(),pd.Series(order).unique()]
+    dataset['new label'] = np.nan
+    
+    for lab, o in zip(dataset['label'].unique(),order):
+        index = lab == dataset['label']
+        dataset['new label'][index] = int(o) 
+    
+    plotlab = pd.DataFrame([dataset['label'].unique(),pd.Series(order).unique()]).T
+    plotlab.columns = ['label','order']
+    plotlab = plotlab.sort_values(by='order').reset_index(drop=True)
+    
+    code = [plotlab['label'].values,plotlab['order'].values]
     
     return dataset,code
     
@@ -5442,6 +5444,7 @@ def centerpointplots(dataset,shape,code):
     
     
                 plt.xlabel('Sample')
+                plt.ylabel('Ratio')
                 plt.xticks(range(iterate))
                 plt.text(xx.min(),y.min(),''.join([str(a)+' : '+str(b)+'\n' for a,b in zip(code[0],code[1])]),fontsize='xx-small')
                 plt.legend(loc='upper right', prop={'size':12},frameon=False)
