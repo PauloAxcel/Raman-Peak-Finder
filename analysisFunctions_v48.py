@@ -5219,7 +5219,7 @@ def comparefiles(dfs,tol):
 #        clean_master('MASTERKEY.csv')
 
 
-#keygen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keymilk_785nm_.csv']
+#keygen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\saliva peaks from the literature.csv']
 #
 #lockgen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\key01st_saliva.csv',
 #           r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keysaliva_785n.csv',
@@ -5263,11 +5263,80 @@ def FilePeakMatching(keygen,lockgen,tol):
     
     plotpoints(dataset2,shape)
     centerpointplots(dataset2,shape,code)
+    plotbands(dataset2)
 
 
     return 1
 
-   
+
+
+
+def plotbands(dataset2):
+    
+    index = dataset2['ratio'] != 0
+    
+    df = dataset2[index].sort_values(by='center').reset_index(drop=True)
+    
+    new_df = []
+    for center in df['center'].unique():
+        index2 = center==df['center']
+        aux = df[index2].drop_duplicates()
+        new_df.append(aux.values[0])
+        
+    new_df = pd.DataFrame(new_df, columns=df.columns)
+    
+    broke_lab = []
+    
+    for lab in new_df['label']:
+        broke_lab.append([lab.split(' ')[0],lab.split(' ')[-1]])
+        
+    new_df = pd.concat([new_df,pd.DataFrame(broke_lab,columns=['bond','sample'])],axis=1)
+    
+    
+    
+    NUM_COLORS = len(new_df['sample'].unique())
+    
+    cmaps = plt.get_cmap('gist_rainbow')
+    
+    colours = [cmaps(1.*i/NUM_COLORS) for i in range(NUM_COLORS)]*shape
+    
+    
+    
+    fig, ax = plt.subplots(figsize=(9,9/1.618))
+    texts = []
+    
+    labels = []
+    
+    for c, l in zip(colours,new_df['sample'].unique()):
+        for cent in new_df[new_df['sample']==l]['center'].unique():
+            texts.append(ax.text(cent,
+                                 random.uniform(0, 1),
+                                 new_df[new_df['center']==cent]['bond'].values[0],
+                                 rotation=90,
+                                 fontsize='xx-small',
+                                 color=c))
+            ax.scatter(cent,random.uniform(0,1),label=l,color=c)
+            
+#    ax.legend(loc='best')
+        
+        
+    
+#    for i in range(new_df.shape[0]):
+#        texts.append(ax.text(new_df['center'][i],random.uniform(0, 1),new_df['label'][i]))
+        
+    adjust_text(texts, autoalign ='y')  
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 def plotpoints(dataset,shape):
     
     name0 = dataset['label'].unique()[0].split(' ')[0]
@@ -5445,6 +5514,7 @@ def centerpointplots(dataset,shape,code):
     
                 plt.xlabel('Sample')
                 plt.ylabel('Ratio')
+                plt.gca().set_ylim(bottom=0)
                 plt.xticks(range(iterate))
                 plt.text(xx.min(),y.min(),''.join([str(a)+' : '+str(b)+'\n' for a,b in zip(code[0],code[1])]),fontsize='xx-small')
                 plt.legend(loc='upper right', prop={'size':12},frameon=False)
