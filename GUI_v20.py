@@ -1170,7 +1170,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
             elif self.SOMCheckBox.isChecked():
                 data = af.ImportDataSOM(keygen,windowmin,windowmax,zscore)
-                som = af.LoadSOM(data,neuron)
+                som = af.LoadSOM(data,neuron) 
                 af.PlotAvgSpec(data,windowmin,windowmax)
                 af.HexagonaSOMPlot(som,data,neuron)
                 af.NeuronActivationperWavePlot(som, data)

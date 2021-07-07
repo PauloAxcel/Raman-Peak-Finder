@@ -4042,14 +4042,15 @@ def diff2(spectra,spectra_std,const):
     
 #spectra = pd.DataFrame(new_spec).T 
     
-#lockgens = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\saliva_all.txt',
-#            r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\milk_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt']
-#
-#keygens = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keysaliva_all..csv']
-#
-#tol = 1
-#
-#operator = 'standard'
+lockgens = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\milk_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt'
+            ,
+            r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\saliva data\milk\saliva_785nm_static1150_3s_3acc_10%_50x_map24_toothpickv02.txt']
+
+keygens = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keysaliva_all..csv']
+
+tol = 1
+
+operator = 'standard'
 
 
 
@@ -4178,11 +4179,14 @@ def peakmatching(keygens,lockgens,tol,operator):
         stack = diff2(spec,pd.DataFrame(),spec.max().min())
         
         fig,ax = plt.subplots(figsize=(9,9/1.618)) 
-        ax.plot(wavenumber,stack, label = stack.columns.tolist())  
-        
+        if len(stack.columns.tolist()) == 1:
+            ax.plot(wavenumber,stack, label = stack.columns.tolist()[0])  
+        else:
+            ax.plot(wavenumber,stack, label = stack.columns.tolist())
+            
         for data in dataset:
             ax.fill_between(np.linspace(data[0]-tol,data[0]+tol,10),stack[data[-1]].max(),stack[data[-1]].min(),color='yellow',alpha=1/3)
-            ax.text(data[0]-tol,stack[data[-1]].min(),data[1][:4],rotation=90,fontsize='xx-small')
+            ax.text(data[0]-tol,stack[data[-1]].min(),data[1],rotation=90,fontsize='xx-small')
             
         ax.legend(loc='best',frameon=False)
         ax.set_xlabel('Raman shift $(cm^{-1})$')
@@ -4202,7 +4206,10 @@ def peakmatching(keygens,lockgens,tol,operator):
         
         lab = stack.columns.tolist()
         fig2,ax2 = plt.subplots(figsize=(9,9/1.618))
-        ax2.plot(wavenumber,stack, label = lab)  
+        if len(lab) == 1:
+            ax2.plot(wavenumber,stack, label = lab[0])
+        else:
+            ax2.plot(wavenumber,stack, label = lab)  
         fig3,ax3 = plt.subplots(figsize=(9,9/1.618))
         
         for i in range(stack.shape[1]):
@@ -4243,7 +4250,7 @@ def peakmatching(keygens,lockgens,tol,operator):
                     ax2.plot(wavenumber,_nLorentzian(wavenumber,*pop)+stack.iloc[:,i].min())
                     ax2.fill_between(wavenumber, _nLorentzian(wavenumber,*pop)+stack.iloc[:,i].min(),
                                          stack.iloc[:,i].min(), color = colours[count],
-                                         label= df_dataset['key'].unique()[i][:4]+' at '+str([round(a,1) for a in wav]),alpha=0.5)
+                                         label= ''.join(df_dataset['key'].unique())+' at '+' , '.join([str(round(a,1)) for a in wav]),alpha=0.5)
                     
                     ax2.legend(loc='best', fontsize='xx-small',frameon=False,ncol=4)
                     ax2.set_xlabel('Raman shift $(cm^{-1})$')
@@ -4256,7 +4263,7 @@ def peakmatching(keygens,lockgens,tol,operator):
             residual_1lorentz = intensity_b - lorentz_all
             
     
-            ax3.plot(wavenumber,residual_1lorentz+min_value[i], label = lab[i][:4]+' - '+df_dataset['key'].unique()[i][:4]+' residue')  
+            ax3.plot(wavenumber,residual_1lorentz+min_value[i], label = lab[i]+' - '+''.join(df_dataset['key'].unique())+' residue')  
             ax3.hlines(0,wavenumber.min(),wavenumber.max(),ls='--',color='r')
             ax3.legend(loc='best', prop={'size':12},frameon=False)
             ax3.set_xlabel('Raman shift $(cm^{-1})$')
@@ -5219,7 +5226,7 @@ def comparefiles(dfs,tol):
 #        clean_master('MASTERKEY.csv')
 
 
-#keygen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\saliva peaks from the literature.csv']
+#keygen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keymilk_785nm_.csv']
 #
 #lockgen = [r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\key01st_saliva.csv',
 #           r'C:\Users\paulo\OneDrive - University of Birmingham\Desktop\birmingham_02\saliva\GUI for raman analysis\keysaliva_785n.csv',
@@ -5263,7 +5270,7 @@ def FilePeakMatching(keygen,lockgen,tol):
     
     plotpoints(dataset2,shape)
     centerpointplots(dataset2,shape,code)
-#    plotbands(dataset2)
+    plotbands(dataset2)
 
 
     return 1
@@ -5320,7 +5327,10 @@ def plotbands(dataset2):
     diff = xmax-xmax%reg+reg-(xmin-xmin%reg)
     xlab = np.linspace(xmin-xmin%reg,xmax-xmax%reg+reg,int(diff//reg)+1)
     aa.set_xticks(xlab)
-    aa.set_ylim(-0.01,1)
+    
+    max_clust = np.max([len(a) for a in cluster(df.values,10)])*3
+    
+    aa.set_ylim(-0.01,max_clust) 
 #    aa.scatter(df,[0 for _ in df],c=c,alpha=0.5,edgecolors='none',label=new_df['sample'].values)
     aa.spines['left'].set_visible(False)
     aa.spines['top'].set_visible(False)
@@ -5328,111 +5338,50 @@ def plotbands(dataset2):
     aa.xaxis.set_label_position('bottom') 
     aa.xaxis.set_ticks_position('bottom')
     plt.tight_layout()
-    patch = patches.Rectangle((xmin-xmin%reg,-0.1),xmax-xmax%reg+reg,1.1, fill=False, alpha=0) # We add a rectangle to make sure the labels don't move ot the right 
+    patch = patches.Rectangle((xmin-xmin%reg,-0.1),xmax-xmax%reg+reg,max_clust, fill=False, alpha=0) # We add a rectangle to make sure the labels don't move ot the right 
     aa.add_patch(patch)
-
+    
+    
     
     texts=[]
     random = []
-    for label, y, cs,sample in zip(df.index.values, df.values,c,new_df['sample'].values):
-        ran =  np.random.random()
-        random.append(ran)
-        aa.scatter(y,0,c=cs,alpha=0.5,edgecolors='none',label=sample)
-        texts+=[aa.text(y,ran, label,color=cs, fontsize=12,rotation=90)]
-#        texts.append(aa.text(random.uniform(0,1), y, label,color=cs, fontsize=8,rotation=90))
+    for cent in cluster(df.values,10):
+        counterup = 0.3
+        if len(cent)>2:
+            counterleft = -15
+        else:
+            counterleft=-5
+        counter = 0
+#        centrange = -5
         
-    adjust_text(texts,  
-            df.values,
-            random,
-#            ha='right', 
-#            va='center', 
-            add_objects=[patch],
-#            precision=0.005,  
-#        expand_text=(1.05, 1),
-        force_text=(0.75, 2), 
-#        force_objects=(1, 0), 
-        autoalign='xy',
-        only_move={'points':'y', 'text':'y', 'objects':'y'})
-    
-#    adjust_text(texts,autoalign='xy')  
-    
+        for ce in cent:
+            label = df[df.values==ce].index.values[0]
+            y = ce
+            cs =  np.array(c)[df.values==ce][0]
+            sample = new_df[df.values==ce]['sample'].values[0]
+#            counterleft = np.random.random()*20
+            
+            ran = counterup
+            random.append(ran)
+            if counter==3:
+                counterleft=-15
+                counter=0
+#                counterup=0.4
+                
+            aa.scatter(y,0.1,c=cs,alpha=0.5,edgecolors='none',label=sample)
+            texts+=[aa.text(y+counterleft,ran, label,color=cs, fontsize=10,rotation=90)]
+            counterup +=0.15*len(label)
+            counterleft +=9
+            counter +=1
+            
+       
     
     aa.set_xlabel('Raman shift (cm$^{-1}$)')
     handles, labels = plt.gca().get_legend_handles_labels()
     by_label = OrderedDict(zip(labels, handles))
     aa.legend(by_label.values(), by_label.keys(),loc='best', prop={'size':12},frameon=False,)
     plt.show()
-
-#    adjust_text(texts, 
-#                [0 for _ in df], 
-#                df.values)
-#                ha='right', 
-#                va='center', 
-#                add_objects=[patch],
-#                precision=0.005,  
-#            expand_text=(1.05, 1),
-#            force_text=(0.75, 0), 
-#            force_objects=(1, 0), 
-#            autoalign=False,
-#            only_move={'points':'x', 'text':'x', 'objects':'x'})
-                        
-    
-                        # We need higher precision than default to make this look perfect
-                        # A small random shift prevents labels which have exactly the same coordinates 
-    # (not a problem in this example really, but wanted to mention this possibility)
-         # We want them to be quite compact, so reducing expansion makes sense
-    #With default forces it takes a very long time to converge, but higher values still produce very nice output
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    fig, ax = plt.subplots(figsize=(9,9/1.618))
-    texts = []
-    
-    labels = []
-    
-    for c, l in zip(colours,new_df['sample'].unique()):
-        for cent in new_df[new_df['sample']==l]['center'].unique():
-            texts.append(ax.text(cent,
-                                 random.uniform(0, 1),
-                                 new_df[new_df['center']==cent]['bond'].values[0],
-                                 rotation=90,
-                                 fontsize='xx-small',
-                                 color=c))
-            ax.scatter(cent,random.uniform(0,1),label=l,color=c)
-            
-#    ax.legend(loc='best')
-        
-        
-    
-#    for i in range(new_df.shape[0]):
-#        texts.append(ax.text(new_df['center'][i],random.uniform(0, 1),new_df['label'][i]))
-        
-    adjust_text(texts, autoalign ='y')  
-    
-    
-    
-    
-    
-    
-    
-    
-    
+     
     
     
     
@@ -5499,21 +5448,14 @@ from sklearn import preprocessing
 def orderfiles(dataset):
     
     order = []
+    a=0
     for cnt, lab in enumerate(dataset['label'].unique()):
         split = lab.split(' ')
         if split[0] == split[-1]:
-#            a = cnt
             order.append(0)
+            a = 1
         else:
-            order.append(cnt+1)
-#            if cnt == 0:
-#                order.append(np.nan)
-#            else:
-#                order.append(cnt)
-            #the +1 is to make sure that the 0 position is allocated for the same label case
-               
-#    order = [a if math.isnan(x) else x for x in order]
-
+            order.append(cnt+1-a)
     
     dataset['new label'] = np.nan
     
@@ -5618,13 +5560,6 @@ def centerpointplots(dataset,shape,code):
                 plt.text(xx.min(),y.min(),''.join([str(a)+' : '+str(b)+'\n' for a,b in zip(code[0],code[1])]),fontsize='xx-small')
                 plt.legend(loc='upper right', prop={'size':12},frameon=False)
                 plt.show()
-
-
-
-
-
-
-
 
 
 
