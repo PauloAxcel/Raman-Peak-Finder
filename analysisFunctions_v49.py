@@ -5330,7 +5330,7 @@ def plotbands(dataset2):
     
     max_clust = np.max([len(a) for a in cluster(df.values,10)])*3
     
-    aa.set_ylim(-0.01,max_clust) 
+    aa.set_ylim(-0.01,max_clust)
 #    aa.scatter(df,[0 for _ in df],c=c,alpha=0.5,edgecolors='none',label=new_df['sample'].values)
     aa.spines['left'].set_visible(False)
     aa.spines['top'].set_visible(False)
@@ -5346,7 +5346,7 @@ def plotbands(dataset2):
     texts=[]
     random = []
     for cent in cluster(df.values,10):
-        counterup = 0.3
+        counterup = 1
         if len(cent)>2:
             counterleft = -15
         else:
@@ -5370,7 +5370,7 @@ def plotbands(dataset2):
                 
             aa.scatter(y,0.1,c=cs,alpha=0.5,edgecolors='none',label=sample)
             texts+=[aa.text(y+counterleft,ran, label,color=cs, fontsize=10,rotation=90)]
-            counterup +=0.15*len(label)
+            counterup +=3.2
             counterleft +=9
             counter +=1
             
