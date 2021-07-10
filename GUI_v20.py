@@ -1,7 +1,7 @@
 import os 
 #from matplotlib import pyplot
 import matplotlib.pyplot as plt
-import analysisFunctions_v49 as af  
+import analysisFunctions_v50 as af  
 
 # GUI:
 import sys
@@ -1169,7 +1169,12 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.resultsBox.setText(' '.join([t[0]+'\n' for t in text]))
 
             elif self.SOMCheckBox.isChecked():
-                data = af.ImportDataSOM(keygen,windowmin,windowmax,zscore)
+                if self.normalizationCheckBox.isChecked():
+                    norm = True                
+                else:
+                    norm = False
+                    
+                data = af.ImportDataSOM(keygen,windowmin,windowmax,zscore,norm)
                 som = af.LoadSOM(data,neuron) 
                 af.PlotAvgSpec(data,windowmin,windowmax)
                 af.HexagonaSOMPlot(som,data,neuron)

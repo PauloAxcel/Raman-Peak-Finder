@@ -4213,6 +4213,13 @@ def peakmatching(keygens,lockgens,tol,operator):
         fig3,ax3 = plt.subplots(figsize=(9,9/1.618))
         
         for i in range(stack.shape[1]):
+            
+            
+            NUM_COLORS = stack.shape[1]
+    
+            cmaps = plt.get_cmap('gist_rainbow')
+            
+            colours2 = [cmaps(1.*k/NUM_COLORS) for k in range(NUM_COLORS)]
 
             intensity_b = stack.iloc[:,i]-stack.iloc[:,i].min()
             max_value.append(intensity_b.max())
@@ -4263,7 +4270,7 @@ def peakmatching(keygens,lockgens,tol,operator):
             residual_1lorentz = intensity_b - lorentz_all
             
     
-            ax3.plot(wavenumber,residual_1lorentz+min_value[i], label = lab[i]+' - '+''.join(df_dataset['key'].unique())+' residue')  
+            ax3.plot(wavenumber,residual_1lorentz+min_value[i], label = lab[i]+' - '+''.join(df_dataset['key'].unique())+' residue',color=colours2[i])  
             ax3.hlines(0,wavenumber.min(),wavenumber.max(),ls='--',color='r')
             ax3.legend(loc='best', prop={'size':12},frameon=False)
             ax3.set_xlabel('Raman shift $(cm^{-1})$')
@@ -4641,7 +4648,7 @@ def NeuronActivationperPlot(som, data,smooth,neuron):
         
 
 
-def ImportDataSOM(inputFilePath,windowmin,windowmax,zscore):
+def ImportDataSOM(inputFilePath,windowmin,windowmax,zscore,norm):
     wavenumber,spectra,label,spec_std = spec(inputFilePath)
     
     dataset = []
@@ -4659,7 +4666,9 @@ def ImportDataSOM(inputFilePath,windowmin,windowmax,zscore):
             ynew = spe.iloc[:,i]
             base = als_baseline(ynew)
             ynew2 = pd.DataFrame(ynew - base)
-            ynew2 = (ynew2-ynew2.min())/(ynew2.max()-ynew2.min())
+            #try without normalization
+            if norm == True:
+                ynew2 = (ynew2-ynew2.min())/(ynew2.max()-ynew2.min())
             
 #            ynew2.div(ynew2.sum(axis=1), axis=0)
             
@@ -4674,8 +4683,10 @@ def ImportDataSOM(inputFilePath,windowmin,windowmax,zscore):
     if (windowmax !=0) & (windowmin != 0):
         region = (wavenumber > windowmin) & (wavenumber < windowmax)
         intensity = intensity.T.loc[wavenumber[region]].T
-        
-    intensity = pd.DataFrame(scale(intensity,axis=1),index=intensity.index,columns=intensity.columns)
+    
+    if norm == True:     
+        intensity = pd.DataFrame(scale(intensity,axis=1),index=intensity.index,columns=intensity.columns)
+
     
     return intensity
 
